@@ -73,8 +73,8 @@ def CC_AArch64_AAPCS : CallingConv<[
   // Handle i1, i8, i16, i32, i64, f32, f64 and v2f64 by passing in registers,
   // up to eight each of GPR and FPR.
   CCIfType<[i1, i8, i16], CCPromoteToType<i32>>,
-  CCIfType<[i32], CCAssignToRegWithShadow<[W0, W1, W2, W3, W4, W5, W6, W7],
-                                          [X0, X1, X2, X3, X4, X5, X6, X7]>>,
+  CCIfType<[i32], CCAssignToRegWithShadow<[W0, W1, W2, W3, W4, W5],
+                                          [X0, X1, X2, X3, X4, X5]>>,
   // i128 is split to two i64s, we can't fit half to register X7.
   CCIfType<[i64], CCIfSplit<CCAssignToRegWithShadow<[X0, X2, X4, X6],
                                                     [X0, X1, X3, X5]>>>,
@@ -82,8 +82,8 @@ def CC_AArch64_AAPCS : CallingConv<[
   // i128 is split to two i64s, and its stack alignment is 16 bytes.
   CCIfType<[i64], CCIfSplit<CCAssignToStackWithShadow<8, 16, [X7]>>>,
 
-  CCIfType<[i64], CCAssignToRegWithShadow<[X0, X1, X2, X3, X4, X5, X6, X7],
-                                          [W0, W1, W2, W3, W4, W5, W6, W7]>>,
+  CCIfType<[i64], CCAssignToRegWithShadow<[X0, X1, X2, X3, X4, X5],
+                                          [W0, W1, W2, W3, W4, W5]>>,
   CCIfType<[f16], CCAssignToRegWithShadow<[H0, H1, H2, H3, H4, H5, H6, H7],
                                           [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
   CCIfType<[f32], CCAssignToRegWithShadow<[S0, S1, S2, S3, S4, S5, S6, S7],
@@ -121,10 +121,10 @@ def RetCC_AArch64_AAPCS : CallingConv<[
                          CCBitConvertToType<f128>>>,
 
   CCIfType<[i1, i8, i16], CCPromoteToType<i32>>,
-  CCIfType<[i32], CCAssignToRegWithShadow<[W0, W1, W2, W3, W4, W5, W6, W7],
-                                          [X0, X1, X2, X3, X4, X5, X6, X7]>>,
-  CCIfType<[i64], CCAssignToRegWithShadow<[X0, X1, X2, X3, X4, X5, X6, X7],
-                                          [W0, W1, W2, W3, W4, W5, W6, W7]>>,
+  CCIfType<[i32], CCAssignToRegWithShadow<[W8, W2],
+                                          [X8, X2]>>,
+  CCIfType<[i64], CCAssignToRegWithShadow<[X8, X2],
+                                          [W8, W2]>>,
   CCIfType<[f16], CCAssignToRegWithShadow<[H0, H1, H2, H3, H4, H5, H6, H7],
                                           [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
   CCIfType<[f32], CCAssignToRegWithShadow<[S0, S1, S2, S3, S4, S5, S6, S7],
@@ -306,8 +306,7 @@ def CC_AArch64_GHC : CallingConv<[
 // It would be better to model its preservation semantics properly (create a
 // vreg on entry, use it in RET & tail call generation; make that vreg def if we
 // end up saving LR as part of a call frame). Watch this space...
-def CSR_AArch64_AAPCS : CalleeSavedRegs<(add LR, FP, X19, X20, X21, X22,
-                                           X23, X24, X25, X26, X27, X28,
+def CSR_AArch64_AAPCS : CalleeSavedRegs<(add LR, FP, X19, X20,
                                            D8,  D9,  D10, D11,
                                            D12, D13, D14, D15)>;
 

@@ -135,12 +135,13 @@ def FFR : AArch64Reg<0, "ffr">, DwarfRegNum<[47]>;
 
 // GPR register classes with the intersections of GPR32/GPR32sp and
 // GPR64/GPR64sp for use by the coalescer.
-def GPR32common : RegisterClass<"AArch64", [i32], 32, (sequence "W%u", 0, 30)> {
+def GPR32common : RegisterClass<"AArch64", [i32], 32,
+                                (add (sequence "W%u", 0, 8), (sequence "W%u", 16, 20), W29, W30)> {
   let AltOrders = [(rotl GPR32common, 8)];
   let AltOrderSelect = [{ return 1; }];
 }
 def GPR64common : RegisterClass<"AArch64", [i64], 64,
-                                (add (sequence "X%u", 0, 28), FP, LR)> {
+                                (add (sequence "X%u", 0, 8), (sequence "X%u", 16, 20), FP, LR)> {
   let AltOrders = [(rotl GPR64common, 8)];
   let AltOrderSelect = [{ return 1; }];
 }
@@ -188,8 +189,8 @@ def GPR64z : RegisterOperand<GPR64> {
 }
 
 // GPR argument registers.
-def GPR32arg : RegisterClass<"AArch64", [i32], 32, (sequence "W%u", 0, 7)>;
-def GPR64arg : RegisterClass<"AArch64", [i64], 64, (sequence "X%u", 0, 7)>;
+def GPR32arg : RegisterClass<"AArch64", [i32], 32, (sequence "W%u", 0, 5)>;
+def GPR64arg : RegisterClass<"AArch64", [i64], 64, (sequence "X%u", 0, 5)>;
 
 // GPR register classes which include WZR/XZR AND SP/WSP. This is not a
 // constraint used by any instructions, it is used as a common super-class.
