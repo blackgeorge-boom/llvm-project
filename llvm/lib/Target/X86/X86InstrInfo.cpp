@@ -876,7 +876,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
       return nullptr;
 
   MachineInstr *NewMI = nullptr;
-  bool Is64Bit = Subtarget.is64Bit();
+  // bool Is64Bit = Subtarget.is64Bit();
 
   bool Is8BitOp = false;
   unsigned MIOpc = MI.getOpcode();
@@ -907,7 +907,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
     unsigned ShAmt = getTruncatedShiftCount(MI, 2);
     if (!isTruncatedShiftCountForLEA(ShAmt)) return nullptr;
 
-    unsigned Opc = Is64Bit ? X86::LEA64_32r : X86::LEA32r;
+    unsigned Opc = X86::LEA32r;
 
     // LEA can't handle ESP.
     bool isKill;
@@ -944,8 +944,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
   case X86::INC64r:
   case X86::INC32r: {
     assert(MI.getNumOperands() >= 2 && "Unknown inc instruction!");
-    unsigned Opc = MIOpc == X86::INC64r ? X86::LEA64r :
-        (Is64Bit ? X86::LEA64_32r : X86::LEA32r);
+    unsigned Opc = MIOpc == X86::INC64r ? X86::LEA64r : X86::LEA32r;
     bool isKill;
     unsigned SrcReg;
     MachineOperand ImplicitOp = MachineOperand::CreateReg(0, false);
@@ -966,8 +965,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
   case X86::DEC64r:
   case X86::DEC32r: {
     assert(MI.getNumOperands() >= 2 && "Unknown dec instruction!");
-    unsigned Opc = MIOpc == X86::DEC64r ? X86::LEA64r
-        : (Is64Bit ? X86::LEA64_32r : X86::LEA32r);
+    unsigned Opc = MIOpc == X86::DEC64r ? X86::LEA64r : X86::LEA32r;
 
     bool isKill;
     unsigned SrcReg;
@@ -1002,7 +1000,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
     if (MIOpc == X86::ADD64rr || MIOpc == X86::ADD64rr_DB)
       Opc = X86::LEA64r;
     else
-      Opc = Is64Bit ? X86::LEA64_32r : X86::LEA32r;
+      Opc = X86::LEA32r;
 
     bool isKill;
     unsigned SrcReg;
@@ -1051,7 +1049,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
   case X86::ADD32ri_DB:
   case X86::ADD32ri8_DB: {
     assert(MI.getNumOperands() >= 3 && "Unknown add instruction!");
-    unsigned Opc = Is64Bit ? X86::LEA64_32r : X86::LEA32r;
+    unsigned Opc = X86::LEA32r;
 
     bool isKill;
     unsigned SrcReg;
@@ -1092,7 +1090,7 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
       return nullptr;
 
     assert(MI.getNumOperands() >= 3 && "Unknown add instruction!");
-    unsigned Opc = Is64Bit ? X86::LEA64_32r : X86::LEA32r;
+    unsigned Opc = X86::LEA32r;
 
     bool isKill;
     unsigned SrcReg;
