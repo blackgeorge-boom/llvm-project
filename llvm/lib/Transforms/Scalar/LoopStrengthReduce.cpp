@@ -4969,10 +4969,12 @@ void LSRInstance::Solve(SmallVectorImpl<const Formula *> &Solution) const {
   SmallPtrSet<const SCEV *, 16> CurRegs;
   DenseSet<const SCEV *> VisitedRegs;
   Workspace.reserve(Uses.size());
+  
+  //Fix: don't continue to find more NewCost
 
   // SolveRecurse does all the work.
-  SolveRecurse(Solution, SolutionCost, Workspace, CurCost,
-               CurRegs, VisitedRegs);
+  //SolveRecurse(Solution, SolutionCost, Workspace, CurCost,
+  //             CurRegs, VisitedRegs);
   if (Solution.empty()) {
     LLVM_DEBUG(dbgs() << "\nNo Satisfactory Solution\n");
     return;

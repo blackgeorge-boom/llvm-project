@@ -38,7 +38,9 @@ class VirtRegMap;
     // intervals have a spill weight that is mostly proportional to the number
     // of uses, while large intervals get a spill weight that is closer to a use
     // density.
-    return UseDefFreq / (Size + 25*SlotIndex::InstrDist);
+    //
+    // FIX: Only consider frequncy, because size is uncontrolled between arches.
+    return UseDefFreq;
   }
 
   /// Calculate auxiliary information for a virtual register such as its

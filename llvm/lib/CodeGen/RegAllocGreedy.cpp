@@ -683,7 +683,7 @@ void RAGreedy::enqueue(LiveInterval *LI) { enqueue(Queue, LI); }
 void RAGreedy::enqueue(PQueue &CurQueue, LiveInterval *LI) {
   // Prioritize live ranges by size, assigning larger ranges first.
   // The queue holds (size, reg) pairs.
-  const unsigned Size = LI->getSize();
+  const unsigned Size = 0; // LI->getSize();
   const unsigned Reg = LI->reg;
   assert(TargetRegisterInfo::isVirtualRegister(Reg) &&
          "Can only enqueue virtual registers");
@@ -2460,6 +2460,8 @@ unsigned RAGreedy::tryLocalSplit(LiveInterval &VirtReg, AllocationOrder &Order,
 unsigned RAGreedy::trySplit(LiveInterval &VirtReg, AllocationOrder &Order,
                             SmallVectorImpl<unsigned>&NewVRegs,
                             const SmallVirtRegSet &FixedRegisters) {
+  // Simply not do split
+  return 0;
   // Ranges must be Split2 or less.
   if (getStage(VirtReg) >= RS_Spill)
     return 0;
