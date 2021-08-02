@@ -40,7 +40,8 @@ class VirtRegMap;
     // density.
     //
     // FIX: Only consider frequncy, because size is uncontrolled between arches.
-    return UseDefFreq;
+    return UseDefFreq / (Size + 25*SlotIndex::InstrDist);
+    // return UseDefFreq;
   }
 
   /// Calculate auxiliary information for a virtual register such as its
