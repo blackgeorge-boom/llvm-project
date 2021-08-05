@@ -44,6 +44,10 @@
 #include "llvm/MC/MCSymbolELF.h"
 #include "llvm/Target/TargetLoweringObjectFile.h"
 
+#include "llvm/Support/MemoryBuffer.h"
+#include "llvm/Support/JSON.h"
+#include <system_error>
+
 using namespace llvm;
 
 namespace {
@@ -2302,6 +2306,34 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     // after it.
     SMShadowTracker.emitShadowPadding(*OutStreamer, getSubtargetInfo());
     // Then emit the call
+
+	MCContext &OutContext = OutStreamer->getContext();
+	const Twine twine("boom");
+	MCSymbol *MILabel = OutContext.createTempSymbol(MF->getName(), true);
+	OutStreamer->EmitLabel(MILabel);
+
+	outs() << MF->getName() << "\n";
+	outs() << MILabel->getName() << "\n";
+
+	StringRef Filename("/home/nikos/temp.json");
+	ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr = MemoryBuffer::getFileOrSTDIN(Filename);
+	if (std::error_code EC = FileOrErr.getError()) {
+		auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
+				"Could not open input file: " + EC.message());
+	}
+	outs() << (FileOrErr.get())->getBuffer() << "\n";
+
+	// Array and Object also have typed indexing accessors for easy traversal:
+	//Expected<Value> E = parse(R"( {"options": {"font": "sans-serif"}} )");
+	Expected<llvm::json::Value> E = llvm::json::parse((FileOrErr.get())->getBuffer());
+	assert(E);
+	if (llvm::json::Object* O = E->getAsObject())
+		if (llvm::json::Object* Opts = O->getObject("options"))
+			if (Optional<StringRef> Font = Opts->getString("font")) {
+				assert(Opts->get("font")->kind() == llvm::json::Value::String);
+				outs() << *(Opts->get("font")) << "\n";
+			}
+
     OutStreamer->EmitInstruction(TmpInst, getSubtargetInfo());
     return;
   }
