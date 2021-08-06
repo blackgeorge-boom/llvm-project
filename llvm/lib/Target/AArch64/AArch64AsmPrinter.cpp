@@ -60,6 +60,10 @@
 #include <map>
 #include <memory>
 
+#include "llvm/Support/MemoryBuffer.h"
+#include "llvm/Support/JSON.h"
+#include <system_error>
+
 using namespace llvm;
 
 #define DEBUG_TYPE "asm-printer"
@@ -1185,6 +1189,43 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
   // Finally, do the automated lowerings for everything else.
   MCInst TmpInst;
   MCInstLowering.Lower(MI, TmpInst);
+
+  if (MI->isCall()) {
+
+	  OutContext.setAllowTemporaryLabels(true);
+	  OutContext.setUseNamesOnTempLabels(true);
+	  MCSymbol *MILabel = OutContext.createTempSymbol(MF->getName(), true);
+	  OutStreamer->EmitLabel(MILabel);
+
+	  outs() << MF->getName() << "\n";
+	  outs() << MILabel->getName() << "\n";
+
+	  ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr = 
+		  MemoryBuffer::getFileOrSTDIN(TM.Options.MCOptions.CallsitePaddingFilename);
+	  if (std::error_code EC = FileOrErr.getError()) {
+		  auto Err = SMDiagnostic(CallsitePaddingFilename, SourceMgr::DK_Error,
+				  "Could not open input file: " + EC.message());
+	  }
+	  outs() << (FileOrErr.get())->getBuffer() << "\n";
+
+	  // Array and Object also have typed indexing accessors for easy traversal:
+	  //Expected<Value> E = parse(R"( {"options": {"font": "sans-serif"}} )");
+	  Expected<llvm::json::Value> E = llvm::json::parse((FileOrErr.get())->getBuffer());
+	  assert(E);
+	  Optional<int64_t> Padding;
+	  if (llvm::json::Object* O = E->getAsObject())
+		  if (llvm::json::Object* Opts = O->getObject("aarch64"))
+			  if (Padding = Opts->getInteger(MILabel->getName())) {
+				  assert(Opts->get(MILabel->getName())->kind() == llvm::json::Value::Number);
+			  }
+
+	  if (Padding.hasValue()) {
+		  assert(Padding.getValue() % 4 == 0);
+		  for (int8_t I = 0; I < Padding.getValue() / 4; I++)
+			EmitToStreamer(*OutStreamer, MCInstBuilder(AArch64::HINT).addImm(0));
+	  }
+  }
+
   EmitToStreamer(*OutStreamer, TmpInst);
 }
 

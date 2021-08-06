@@ -2308,6 +2308,8 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     // Then emit the call
 
 	MCContext &OutContext = OutStreamer->getContext();
+	OutContext.setAllowTemporaryLabels(true);
+	OutContext.setUseNamesOnTempLabels(true);
 	const Twine twine("boom");
 	MCSymbol *MILabel = OutContext.createTempSymbol(MF->getName(), true);
 	OutStreamer->EmitLabel(MILabel);
@@ -2327,12 +2329,17 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 	//Expected<Value> E = parse(R"( {"options": {"font": "sans-serif"}} )");
 	Expected<llvm::json::Value> E = llvm::json::parse((FileOrErr.get())->getBuffer());
 	assert(E);
+	Optional<int64_t> Padding;
 	if (llvm::json::Object* O = E->getAsObject())
-		if (llvm::json::Object* Opts = O->getObject("options"))
-			if (Optional<StringRef> Font = Opts->getString("font")) {
-				assert(Opts->get("font")->kind() == llvm::json::Value::String);
-				outs() << *(Opts->get("font")) << "\n";
+		if (llvm::json::Object* Opts = O->getObject("x86-64"))
+			if (Padding = Opts->getInteger(MILabel->getName())) {
+				assert(Opts->get(MILabel->getName())->kind() == llvm::json::Value::Number);
 			}
+
+	if (Padding.hasValue()) {
+		outs() << "here\n";
+		EmitNops(*OutStreamer, Padding.getValue(), Subtarget->is64Bit(), getSubtargetInfo());
+	}
 
     OutStreamer->EmitInstruction(TmpInst, getSubtargetInfo());
     return;

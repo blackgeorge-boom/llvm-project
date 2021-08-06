@@ -59,6 +59,24 @@ public:
   std::string ABIName;
   std::string SplitDwarfFile;
 
+  /// JSON file describing the callsites padding for each architecture. 
+  /// The file is in the form:
+  /// {
+  ///     "x86-64": {
+  ///         ".Lmain0": 2,
+  ///         ".Lmain1": 1
+  ///      },
+  ///      "aarch64": {
+  ///          ".Lmain0": 12,
+  ///          ".Lmain1": 0
+  ///      }
+  /// }
+  /// For example in x86-64 .Lmain0 is a temporary label for the first call inside main.
+  /// The number 2 indicates 2 bytes needed for padding.
+  /// In aarch64 the number of padding must be a multiple of 4.
+  /// TODO check for x86-64
+  std::string CallsitePaddingFilename;
+
   /// Additional paths to search for `.include` directives when using the
   /// integrated assembler.
   std::vector<std::string> IASSearchPaths;

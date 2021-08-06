@@ -68,6 +68,9 @@ static cl::opt<std::string>
 OutputFilename("o", cl::desc("Output filename"), cl::value_desc("filename"));
 
 static cl::opt<std::string>
+CallsitePaddingFilename("callsite-padding", cl::desc("JSON file with padding values for callsites"), cl::value_desc("filename"));
+
+static cl::opt<std::string>
     SplitDwarfOutputFile("split-dwarf-output",
                          cl::desc(".dwo output filename"),
                          cl::value_desc("filename"));
@@ -454,6 +457,7 @@ static int compileModule(char **argv, LLVMContext &Context) {
   Options.MCOptions.PreserveAsmComments = PreserveComments;
   Options.MCOptions.IASSearchPaths = IncludeDirs;
   Options.MCOptions.SplitDwarfFile = SplitDwarfFile;
+  Options.MCOptions.CallsitePaddingFilename = CallsitePaddingFilename;
 
   std::unique_ptr<TargetMachine> Target(TheTarget->createTargetMachine(
       TheTriple.getTriple(), CPUStr, FeaturesStr, Options, getRelocModel(),
