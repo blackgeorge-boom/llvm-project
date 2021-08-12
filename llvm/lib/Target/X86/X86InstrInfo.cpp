@@ -562,8 +562,9 @@ bool X86InstrInfo::isReallyTriviallyReMaterializable(const MachineInstr &MI,
         MI.getOperand(1 + X86::AddrIndexReg).getReg() == 0 &&
         MI.isDereferenceableInvariantLoad(AA)) {
       unsigned BaseReg = MI.getOperand(1 + X86::AddrBaseReg).getReg();
-      if (BaseReg == 0 || BaseReg == X86::RIP)
-        return true;
+      // Remove the constant rematerialize from X86
+      // if (BaseReg == 0 || BaseReg == X86::RIP)
+      //   return true;
       // Allow re-materialization of PIC load.
       if (!ReMatPICStubLoad && MI.getOperand(1 + X86::AddrDisp).isGlobal())
         return false;
