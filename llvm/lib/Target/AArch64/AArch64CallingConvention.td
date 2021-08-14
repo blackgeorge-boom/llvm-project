@@ -51,7 +51,7 @@ def CC_AArch64_AAPCS : CallingConv<[
   CCIfInReg<CCIfType<[i64],
     CCIfSRet<CCIfType<[i64], CCAssignToRegWithShadow<[X0, X1], [W0, W1]>>>>>,
 
-  CCIfSRet<CCIfType<[i64], CCAssignToRegWithShadow<[X8], [W8]>>>,
+  CCIfSRet<CCIfType<[i64], CCAssignToRegWithShadow<[X0], [W0]>>>,
 
   // Put ByVal arguments directly on the stack. Minimum size and alignment of a
   // slot is 64-bit.
@@ -125,17 +125,17 @@ def RetCC_AArch64_AAPCS : CallingConv<[
                                           [X8, X2]>>,
   CCIfType<[i64], CCAssignToRegWithShadow<[X8, X2],
                                           [W8, W2]>>,
-  CCIfType<[f16], CCAssignToRegWithShadow<[H0, H1, H2, H3, H4, H5, H6, H7],
-                                          [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
-  CCIfType<[f32], CCAssignToRegWithShadow<[S0, S1, S2, S3, S4, S5, S6, S7],
-                                          [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
-  CCIfType<[f64], CCAssignToRegWithShadow<[D0, D1, D2, D3, D4, D5, D6, D7],
-                                          [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
+  CCIfType<[f16], CCAssignToRegWithShadow<[H0, H1],
+                                          [Q0, Q1]>>,
+  CCIfType<[f32], CCAssignToRegWithShadow<[S0, S1],
+                                          [Q0, Q1]>>,
+  CCIfType<[f64], CCAssignToRegWithShadow<[D0, D1],
+                                          [Q0, Q1]>>,
   CCIfType<[v1i64, v2i32, v4i16, v8i8, v1f64, v2f32, v4f16],
-      CCAssignToRegWithShadow<[D0, D1, D2, D3, D4, D5, D6, D7],
-                              [Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>,
+      CCAssignToRegWithShadow<[D0, D1, D2, D3],
+                              [Q0, Q1, Q2, Q3]>>,
   CCIfType<[f128, v2i64, v4i32, v8i16, v16i8, v4f32, v2f64, v8f16],
-      CCAssignToReg<[Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7]>>
+      CCAssignToReg<[Q0, Q1, Q2, Q3]>>
 ]>;
 
 // Vararg functions on windows pass floats in integer registers
