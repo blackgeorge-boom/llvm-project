@@ -934,7 +934,7 @@ bool TargetInstrInfo::isReallyTriviallyReMaterializableGeneric(
         // If the physreg has no defs anywhere, it's just an ambient register
         // and we can freely move its uses. Alternatively, if it's allocatable,
         // it could get allocated to something with a def during allocation.
-        if (!MRI.isConstantPhysReg(Reg))
+        // if (!MRI.isConstantPhysReg(Reg))
           return false;
       } else {
         // A physreg def. We can't remat it.

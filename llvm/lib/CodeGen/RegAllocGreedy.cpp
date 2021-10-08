@@ -790,7 +790,9 @@ unsigned RAGreedy::tryAssign(LiveInterval &VirtReg,
     }
 
   // Try to evict interference from a cheaper alternative.
-  unsigned Cost = TRI->getCostPerUse(PhysReg);
+  // When using registers for the first time, X86 will consider the cost while
+  // ARM not. Cancle the cost for x86
+  unsigned Cost = 0; // TRI->getCostPerUse(PhysReg);
 
   // Most registers have 0 additional cost.
   if (!Cost)
@@ -2460,6 +2462,8 @@ unsigned RAGreedy::tryLocalSplit(LiveInterval &VirtReg, AllocationOrder &Order,
 unsigned RAGreedy::trySplit(LiveInterval &VirtReg, AllocationOrder &Order,
                             SmallVectorImpl<unsigned>&NewVRegs,
                             const SmallVirtRegSet &FixedRegisters) {
+  // Simply not do split
+  // return 0;
   // Ranges must be Split2 or less.
   if (getStage(VirtReg) >= RS_Spill)
     return 0;

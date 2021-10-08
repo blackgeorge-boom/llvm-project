@@ -154,6 +154,8 @@ def GPR64 : RegisterClass<"AArch64", [i64], 64, (add GPR64common, XZR)> {
   let AltOrders = [(rotl GPR64, 8)];
   let AltOrderSelect = [{ return 1; }];
 }
+// GPR to execute ADRP load
+def GPRadrp : RegisterClass<"AArch64", [i64], 64, (add X21)>;
 
 // GPR register classes which include SP/WSP.
 def GPR32sp : RegisterClass<"AArch64", [i32], 32, (add GPR32common, WSP)> {

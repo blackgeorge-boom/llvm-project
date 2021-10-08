@@ -1059,6 +1059,10 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
     // If we have reserved argument space for call sites in the function
     // immediately on entry to the current function, count it as part of the
     // overall stack size.
+    
+    // This should always be false because we cancled the FP eliminate.
+    // For unknown reason, ARM will run it and causes a bigger frame than
+    // needed.
     if (MFI.adjustsStack() && TFI.hasReservedCallFrame(MF))
       Offset += MFI.getMaxCallFrameSize();
 
