@@ -3081,6 +3081,9 @@ void X86FrameLowering::orderFrameObjects(
     const MachineFunction &MF, SmallVectorImpl<int> &ObjectsToAllocate) const {
   const MachineFrameInfo &MFI = MF.getFrameInfo();
 
+  // DO NOTHING HERE
+  return;
+
   // Don't waste time if there's nothing to do.
   if (ObjectsToAllocate.empty())
     return;

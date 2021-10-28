@@ -1799,7 +1799,7 @@ static void computeCalleeSaveRegisterPairs(
       Offset -= 8;
       assert(Offset % 16 == 0);
       assert(MFI.getObjectAlignment(RPI.FrameIdx) <= 16);
-      MFI.setObjectAlignment(RPI.FrameIdx, 16);
+      MFI.setObjectAlignment(RPI.FrameIdx, 8);
     }
 
     assert(Offset % Scale == 0);
@@ -2164,15 +2164,16 @@ void AArch64FrameLowering::determineCalleeSaves(MachineFunction &MF,
 
   // Adding the size of additional 64bit GPR saves.
   CSStackSize += 8 * (SavedRegs.count() - NumSavedRegs);
-  unsigned AlignedCSStackSize = alignTo(CSStackSize, 16);
+  // unsigned AlignedCSStackSize = alignTo(CSStackSize, 16);
   LLVM_DEBUG(dbgs() << "Estimated stack frame size: "
-               << EstimatedStackSize + AlignedCSStackSize
+               << EstimatedStackSize + CSStackSize // AlignedCSStackSize
                << " bytes.\n");
 
   // Round up to register pair alignment to avoid additional SP adjustment
   // instructions.
-  AFI->setCalleeSavedStackSize(AlignedCSStackSize);
-  AFI->setCalleeSaveStackHasFreeSpace(AlignedCSStackSize != CSStackSize);
+  AFI->setCalleeSavedStackSize(CSStackSize); // AlignedCSStackSize);
+  // AFI->setCalleeSaveStackHasFreeSpace(AlignedCSStackSize != CSStackSize);
+  AFI->setCalleeSaveStackHasFreeSpace(false);
 }
 
 bool AArch64FrameLowering::enableStackSlotScavenging(
