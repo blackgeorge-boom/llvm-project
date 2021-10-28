@@ -306,18 +306,12 @@ def CC_AArch64_GHC : CallingConv<[
 // It would be better to model its preservation semantics properly (create a
 // vreg on entry, use it in RET & tail call generation; make that vreg def if we
 // end up saving LR as part of a call frame). Watch this space...
-def CSR_AArch64_AAPCS : CalleeSavedRegs<(add LR, FP, X19, X20, X21, X22,
-                                           X23, X24, X25, X26, X27, X28,
-                                           D8,  D9,  D10, D11,
-                                           D12, D13, D14, D15)>;
+def CSR_AArch64_AAPCS : CalleeSavedRegs<(add LR, FP, X19, X20)>;
 
 // Win64 has unwinding codes for an (FP,LR) pair, save_fplr and save_fplr_x.
 // We put FP before LR, so that frame lowering logic generates (FP,LR) pairs,
 // and not (LR,FP) pairs.
-def CSR_Win_AArch64_AAPCS : CalleeSavedRegs<(add FP, LR, X19, X20, X21, X22,
-                                               X23, X24, X25, X26, X27, X28,
-                                               D8, D9, D10, D11,
-                                               D12, D13, D14, D15)>;
+def CSR_Win_AArch64_AAPCS : CalleeSavedRegs<(add FP, LR, X19, X20)>;
 
 // AArch64 PCS for vector functions (VPCS)
 // must (additionally) preserve full Q8-Q23 registers
