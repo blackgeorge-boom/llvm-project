@@ -683,7 +683,7 @@ void RAGreedy::enqueue(LiveInterval *LI) { enqueue(Queue, LI); }
 void RAGreedy::enqueue(PQueue &CurQueue, LiveInterval *LI) {
   // Prioritize live ranges by size, assigning larger ranges first.
   // The queue holds (size, reg) pairs.
-  const unsigned Size = LI->getSize();
+  const unsigned Size = 0;//LI->getSize();
   const unsigned Reg = LI->reg;
   assert(TargetRegisterInfo::isVirtualRegister(Reg) &&
          "Can only enqueue virtual registers");
@@ -790,7 +790,7 @@ unsigned RAGreedy::tryAssign(LiveInterval &VirtReg,
     }
 
   // Try to evict interference from a cheaper alternative.
-  unsigned Cost = TRI->getCostPerUse(PhysReg);
+  unsigned Cost = 0;//TRI->getCostPerUse(PhysReg);
 
   // Most registers have 0 additional cost.
   if (!Cost)
