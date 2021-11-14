@@ -60,12 +60,12 @@ let isTerminator = 1, isReturn = 1, isBarrier = 1,
 // Unconditional branches.
 let isBarrier = 1, isBranch = 1, isTerminator = 1, SchedRW = [WriteJump] in {
   def JMP_1 : Ii8PCRel<0xEB, RawFrm, (outs), (ins brtarget8:$dst),
-                       "jmp\t$dst", [(br bb:$dst)]>;
+                       "jmp\t$dst", []>;
   let hasSideEffects = 0, isCodeGenOnly = 1, ForceDisassemble = 1 in {
     def JMP_2 : Ii16PCRel<0xE9, RawFrm, (outs), (ins brtarget16:$dst),
                           "jmp\t$dst", []>, OpSize16;
     def JMP_4 : Ii32PCRel<0xE9, RawFrm, (outs), (ins brtarget32:$dst),
-                          "jmp\t$dst", []>, OpSize32;
+                          "jmp\t$dst", [(br bb:$dst)]>, OpSize32;
   }
 }
 
@@ -75,7 +75,7 @@ let isBranch = 1, isTerminator = 1, Uses = [EFLAGS], SchedRW = [WriteJump],
   def JCC_1 : Ii8PCRel <0x70, AddCCFrm, (outs),
                         (ins brtarget8:$dst, ccode:$cond),
                         "j${cond}\t$dst",
-                        [(X86brcond bb:$dst, imm:$cond, EFLAGS)]>;
+                        []>;
   let hasSideEffects = 0 in {
     def JCC_2 : Ii16PCRel<0x80, AddCCFrm, (outs),
                           (ins brtarget16:$dst, ccode:$cond),
@@ -84,7 +84,7 @@ let isBranch = 1, isTerminator = 1, Uses = [EFLAGS], SchedRW = [WriteJump],
     def JCC_4 : Ii32PCRel<0x80, AddCCFrm, (outs),
                           (ins brtarget32:$dst, ccode:$cond),
                           "j${cond}\t$dst",
-                          []>, TB, OpSize32;
+                          [(X86brcond bb:$dst, imm:$cond, EFLAGS)]>, TB, OpSize32;
   }
 }
 
