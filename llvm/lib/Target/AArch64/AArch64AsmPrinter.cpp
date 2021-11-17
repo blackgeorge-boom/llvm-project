@@ -1218,7 +1218,7 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
 		  if (Padding.hasValue()) {
 			  assert(Padding.getValue() % 4 == 0);
-			  for (int8_t I = 0; I < Padding.getValue() / 4; I++)
+			  for (int64_t I = 0; I < Padding.getValue() / 4; I++)
 				  EmitToStreamer(*OutStreamer, MCInstBuilder(AArch64::HINT).addImm(0));
 		  }
 	  }
