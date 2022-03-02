@@ -651,11 +651,7 @@ static const unsigned QQDecoderTable[] = {
   AArch64::Q0_Q1,   AArch64::Q1_Q2,   AArch64::Q2_Q3,   AArch64::Q3_Q4,
   AArch64::Q4_Q5,   AArch64::Q5_Q6,   AArch64::Q6_Q7,   AArch64::Q7_Q8,
   AArch64::Q8_Q9,   AArch64::Q9_Q10,  AArch64::Q10_Q11, AArch64::Q11_Q12,
-  AArch64::Q12_Q13, AArch64::Q13_Q14, AArch64::Q14_Q15, AArch64::Q15_Q16,
-  AArch64::Q16_Q17, AArch64::Q17_Q18, AArch64::Q18_Q19, AArch64::Q19_Q20,
-  AArch64::Q20_Q21, AArch64::Q21_Q22, AArch64::Q22_Q23, AArch64::Q23_Q24,
-  AArch64::Q24_Q25, AArch64::Q25_Q26, AArch64::Q26_Q27, AArch64::Q27_Q28,
-  AArch64::Q28_Q29, AArch64::Q29_Q30, AArch64::Q30_Q31, AArch64::Q31_Q0
+  AArch64::Q12_Q13, AArch64::Q13_Q14
 };
 
 static DecodeStatus DecodeQQRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -672,13 +668,7 @@ static const unsigned QQQDecoderTable[] = {
   AArch64::Q3_Q4_Q5,    AArch64::Q4_Q5_Q6,    AArch64::Q5_Q6_Q7,
   AArch64::Q6_Q7_Q8,    AArch64::Q7_Q8_Q9,    AArch64::Q8_Q9_Q10,
   AArch64::Q9_Q10_Q11,  AArch64::Q10_Q11_Q12, AArch64::Q11_Q12_Q13,
-  AArch64::Q12_Q13_Q14, AArch64::Q13_Q14_Q15, AArch64::Q14_Q15_Q16,
-  AArch64::Q15_Q16_Q17, AArch64::Q16_Q17_Q18, AArch64::Q17_Q18_Q19,
-  AArch64::Q18_Q19_Q20, AArch64::Q19_Q20_Q21, AArch64::Q20_Q21_Q22,
-  AArch64::Q21_Q22_Q23, AArch64::Q22_Q23_Q24, AArch64::Q23_Q24_Q25,
-  AArch64::Q24_Q25_Q26, AArch64::Q25_Q26_Q27, AArch64::Q26_Q27_Q28,
-  AArch64::Q27_Q28_Q29, AArch64::Q28_Q29_Q30, AArch64::Q29_Q30_Q31,
-  AArch64::Q30_Q31_Q0,  AArch64::Q31_Q0_Q1
+  AArch64::Q12_Q13_Q14, AArch64::Q13_Q14_Q15
 };
 
 static DecodeStatus DecodeQQQRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -695,13 +685,7 @@ static const unsigned QQQQDecoderTable[] = {
   AArch64::Q3_Q4_Q5_Q6,     AArch64::Q4_Q5_Q6_Q7,     AArch64::Q5_Q6_Q7_Q8,
   AArch64::Q6_Q7_Q8_Q9,     AArch64::Q7_Q8_Q9_Q10,    AArch64::Q8_Q9_Q10_Q11,
   AArch64::Q9_Q10_Q11_Q12,  AArch64::Q10_Q11_Q12_Q13, AArch64::Q11_Q12_Q13_Q14,
-  AArch64::Q12_Q13_Q14_Q15, AArch64::Q13_Q14_Q15_Q16, AArch64::Q14_Q15_Q16_Q17,
-  AArch64::Q15_Q16_Q17_Q18, AArch64::Q16_Q17_Q18_Q19, AArch64::Q17_Q18_Q19_Q20,
-  AArch64::Q18_Q19_Q20_Q21, AArch64::Q19_Q20_Q21_Q22, AArch64::Q20_Q21_Q22_Q23,
-  AArch64::Q21_Q22_Q23_Q24, AArch64::Q22_Q23_Q24_Q25, AArch64::Q23_Q24_Q25_Q26,
-  AArch64::Q24_Q25_Q26_Q27, AArch64::Q25_Q26_Q27_Q28, AArch64::Q26_Q27_Q28_Q29,
-  AArch64::Q27_Q28_Q29_Q30, AArch64::Q28_Q29_Q30_Q31, AArch64::Q29_Q30_Q31_Q0,
-  AArch64::Q30_Q31_Q0_Q1,   AArch64::Q31_Q0_Q1_Q2
+  AArch64::Q12_Q13_Q14_Q15
 };
 
 static DecodeStatus DecodeQQQQRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -718,11 +702,7 @@ static const unsigned DDDecoderTable[] = {
   AArch64::D0_D1,   AArch64::D1_D2,   AArch64::D2_D3,   AArch64::D3_D4,
   AArch64::D4_D5,   AArch64::D5_D6,   AArch64::D6_D7,   AArch64::D7_D8,
   AArch64::D8_D9,   AArch64::D9_D10,  AArch64::D10_D11, AArch64::D11_D12,
-  AArch64::D12_D13, AArch64::D13_D14, AArch64::D14_D15, AArch64::D15_D16,
-  AArch64::D16_D17, AArch64::D17_D18, AArch64::D18_D19, AArch64::D19_D20,
-  AArch64::D20_D21, AArch64::D21_D22, AArch64::D22_D23, AArch64::D23_D24,
-  AArch64::D24_D25, AArch64::D25_D26, AArch64::D26_D27, AArch64::D27_D28,
-  AArch64::D28_D29, AArch64::D29_D30, AArch64::D30_D31, AArch64::D31_D0
+  AArch64::D12_D13, AArch64::D13_D14
 };
 
 static DecodeStatus DecodeDDRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -739,13 +719,7 @@ static const unsigned DDDDecoderTable[] = {
   AArch64::D3_D4_D5,    AArch64::D4_D5_D6,    AArch64::D5_D6_D7,
   AArch64::D6_D7_D8,    AArch64::D7_D8_D9,    AArch64::D8_D9_D10,
   AArch64::D9_D10_D11,  AArch64::D10_D11_D12, AArch64::D11_D12_D13,
-  AArch64::D12_D13_D14, AArch64::D13_D14_D15, AArch64::D14_D15_D16,
-  AArch64::D15_D16_D17, AArch64::D16_D17_D18, AArch64::D17_D18_D19,
-  AArch64::D18_D19_D20, AArch64::D19_D20_D21, AArch64::D20_D21_D22,
-  AArch64::D21_D22_D23, AArch64::D22_D23_D24, AArch64::D23_D24_D25,
-  AArch64::D24_D25_D26, AArch64::D25_D26_D27, AArch64::D26_D27_D28,
-  AArch64::D27_D28_D29, AArch64::D28_D29_D30, AArch64::D29_D30_D31,
-  AArch64::D30_D31_D0,  AArch64::D31_D0_D1
+  AArch64::D12_D13_D14, AArch64::D13_D14_D15
 };
 
 static DecodeStatus DecodeDDDRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -762,13 +736,7 @@ static const unsigned DDDDDecoderTable[] = {
   AArch64::D3_D4_D5_D6,     AArch64::D4_D5_D6_D7,     AArch64::D5_D6_D7_D8,
   AArch64::D6_D7_D8_D9,     AArch64::D7_D8_D9_D10,    AArch64::D8_D9_D10_D11,
   AArch64::D9_D10_D11_D12,  AArch64::D10_D11_D12_D13, AArch64::D11_D12_D13_D14,
-  AArch64::D12_D13_D14_D15, AArch64::D13_D14_D15_D16, AArch64::D14_D15_D16_D17,
-  AArch64::D15_D16_D17_D18, AArch64::D16_D17_D18_D19, AArch64::D17_D18_D19_D20,
-  AArch64::D18_D19_D20_D21, AArch64::D19_D20_D21_D22, AArch64::D20_D21_D22_D23,
-  AArch64::D21_D22_D23_D24, AArch64::D22_D23_D24_D25, AArch64::D23_D24_D25_D26,
-  AArch64::D24_D25_D26_D27, AArch64::D25_D26_D27_D28, AArch64::D26_D27_D28_D29,
-  AArch64::D27_D28_D29_D30, AArch64::D28_D29_D30_D31, AArch64::D29_D30_D31_D0,
-  AArch64::D30_D31_D0_D1,   AArch64::D31_D0_D1_D2
+  AArch64::D12_D13_D14_D15
 };
 
 static DecodeStatus DecodeDDDDRegisterClass(MCInst &Inst, unsigned RegNo,
