@@ -74,6 +74,11 @@ static cl::opt<bool> DisableBlockAlign("disable-block-align",
                                 cl::desc("Disable alignment at the beginning of basic blocks."),
                                 cl::init(false));
 
+static cl::opt<bool>
+    DisableX86FrameObjOrder("disable-x86-frame-obj-order",
+                            cl::desc("Disable heuristic for frame object ordering in X86 frame lowering."),
+                            cl::init(false));
+
 static cl::opt<std::string>
     SplitDwarfOutputFile("split-dwarf-output",
                          cl::desc(".dwo output filename"),
@@ -463,6 +468,7 @@ static int compileModule(char **argv, LLVMContext &Context) {
   Options.MCOptions.SplitDwarfFile = SplitDwarfFile;
   Options.MCOptions.CallsitePaddingFilename = CallsitePaddingFilename;
   Options.MCOptions.DisableBlockAlign = DisableBlockAlign;
+  Options.MCOptions.DisableX86FrameObjOrder = DisableX86FrameObjOrder;
 
   std::unique_ptr<TargetMachine> Target(TheTarget->createTargetMachine(
       TheTriple.getTriple(), CPUStr, FeaturesStr, Options, getRelocModel(),

@@ -3082,7 +3082,7 @@ void X86FrameLowering::orderFrameObjects(
   const MachineFrameInfo &MFI = MF.getFrameInfo();
 
   // Don't waste time if there's nothing to do.
-  if (ObjectsToAllocate.empty())
+  if (ObjectsToAllocate.empty() || MF.getTarget().Options.MCOptions.DisableX86FrameObjOrder)
     return;
 
   // Create an array of all MFI objects. We won't need all of these

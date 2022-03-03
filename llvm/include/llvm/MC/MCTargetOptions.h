@@ -84,6 +84,11 @@ public:
   /// on top of callsite padding, which ruins the callsite alignment.
   bool DisableBlockAlign;
 
+  /// X86 uses a heuristic to order the symbols in the local stack.
+  /// AArch64 does not follow a similar strategy, so disable this ordering
+  /// to keep the same stack layout.
+  bool DisableX86FrameObjOrder;
+
   /// Additional paths to search for `.include` directives when using the
   /// integrated assembler.
   std::vector<std::string> IASSearchPaths;
