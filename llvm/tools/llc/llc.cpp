@@ -79,6 +79,11 @@ static cl::opt<bool>
                             cl::desc("Disable heuristic for frame object ordering in X86 frame lowering."),
                             cl::init(false));
 
+static cl::opt<int>
+    AArch64CSRAlignment("aarch64-csr-alignment",
+                            cl::desc("Set the alignment of single callee-saved registers for AArch64 (defaults to 16)."),
+                            cl::init(16));
+
 static cl::opt<std::string>
     SplitDwarfOutputFile("split-dwarf-output",
                          cl::desc(".dwo output filename"),
@@ -469,6 +474,7 @@ static int compileModule(char **argv, LLVMContext &Context) {
   Options.MCOptions.CallsitePaddingFilename = CallsitePaddingFilename;
   Options.MCOptions.DisableBlockAlign = DisableBlockAlign;
   Options.MCOptions.DisableX86FrameObjOrder = DisableX86FrameObjOrder;
+  Options.MCOptions.AArch64CSRAlignment = AArch64CSRAlignment;
 
   std::unique_ptr<TargetMachine> Target(TheTarget->createTargetMachine(
       TheTriple.getTriple(), CPUStr, FeaturesStr, Options, getRelocModel(),
