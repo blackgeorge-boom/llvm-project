@@ -89,6 +89,11 @@ public:
   /// to keep the same stack layout.
   bool DisableX86FrameObjOrder;
 
+  /// AArch64 will align single callee-saved registers to 16 bytes.
+  /// We add this parameter to experiment with 8 bytes also,
+  /// for keeping the same stack layout with X86.
+  int AArch64CSRAlignment;
+
   /// Additional paths to search for `.include` directives when using the
   /// integrated assembler.
   std::vector<std::string> IASSearchPaths;

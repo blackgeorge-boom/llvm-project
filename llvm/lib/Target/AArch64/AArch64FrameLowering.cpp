@@ -1808,7 +1808,8 @@ static void computeCalleeSaveRegisterPairs(
       Offset -= 8;
       assert(Offset % 16 == 0);
       assert(MFI.getObjectAlignment(RPI.FrameIdx) <= 16);
-      MFI.setObjectAlignment(RPI.FrameIdx, 16);
+      assert(MF.getTarget().Options.MCOptions.AArch64CSRAlignment <= 16);
+      MFI.setObjectAlignment(RPI.FrameIdx, MF.getTarget().Options.MCOptions.AArch64CSRAlignment);
     }
 
     assert(Offset % Scale == 0);
@@ -2173,7 +2174,7 @@ void AArch64FrameLowering::determineCalleeSaves(MachineFunction &MF,
 
   // Adding the size of additional 64bit GPR saves.
   CSStackSize += 8 * (SavedRegs.count() - NumSavedRegs);
-  unsigned AlignedCSStackSize = alignTo(CSStackSize, 16);
+  unsigned AlignedCSStackSize = alignTo(CSStackSize, MF.getTarget().Options.MCOptions.AArch64CSRAlignment);
   LLVM_DEBUG(dbgs() << "Estimated stack frame size: "
                << EstimatedStackSize + AlignedCSStackSize
                << " bytes.\n");
