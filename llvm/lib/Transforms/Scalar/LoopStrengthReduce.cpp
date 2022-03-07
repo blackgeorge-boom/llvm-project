@@ -168,6 +168,13 @@ static cl::opt<unsigned> SetupCostDepthLimit(
     "lsr-setupcost-depth-limit", cl::Hidden, cl::init(7),
     cl::desc("The limit on recursion depth for LSRs setup cost"));
 
+/// Loop strength reduction optimization exhibits different behaviour between the architectures.
+/// We add this parameter to experiment with disabling the solver function of the optimization,
+/// to keep same stack layout.
+static cl::opt<bool> DisableLoopStrengthReduction("disable-lsr",
+                                                  cl::desc("Disable loop strength reduction solver."),
+                                                  cl::init(false));
+
 #ifndef NDEBUG
 // Stress test IV chain generation.
 static cl::opt<bool> StressIVChain(
@@ -4971,8 +4978,10 @@ void LSRInstance::Solve(SmallVectorImpl<const Formula *> &Solution) const {
   Workspace.reserve(Uses.size());
 
   // SolveRecurse does all the work.
-  SolveRecurse(Solution, SolutionCost, Workspace, CurCost,
-               CurRegs, VisitedRegs);
+  if (!DisableLoopStrengthReduction) {
+    SolveRecurse(Solution, SolutionCost, Workspace, CurCost, CurRegs,
+                 VisitedRegs);
+  }
   if (Solution.empty()) {
     LLVM_DEBUG(dbgs() << "\nNo Satisfactory Solution\n");
     return;
