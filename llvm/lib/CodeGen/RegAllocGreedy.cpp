@@ -142,6 +142,13 @@ static cl::opt<bool> ConsiderLocalIntervalCost(
              "candidate when choosing the best split candidate."),
     cl::init(false));
 
+/// Simplify register allocation costs to give the same allocation
+/// for both X86 and AArch64 and keep the same stack layout.
+static cl::opt<bool>
+    SimplifyRegalloc("simplify-regalloc",
+                            cl::desc("Simplify costs in greedy register allocation."),
+                            cl::init(false));
+
 static RegisterRegAlloc greedyRegAlloc("greedy", "greedy register allocator",
                                        createGreedyRegisterAllocator);
 
@@ -683,7 +690,7 @@ void RAGreedy::enqueue(LiveInterval *LI) { enqueue(Queue, LI); }
 void RAGreedy::enqueue(PQueue &CurQueue, LiveInterval *LI) {
   // Prioritize live ranges by size, assigning larger ranges first.
   // The queue holds (size, reg) pairs.
-  const unsigned Size = LI->getSize();
+  const unsigned Size = SimplifyRegalloc? 0 : LI->getSize();
   const unsigned Reg = LI->reg;
   assert(TargetRegisterInfo::isVirtualRegister(Reg) &&
          "Can only enqueue virtual registers");
@@ -790,7 +797,7 @@ unsigned RAGreedy::tryAssign(LiveInterval &VirtReg,
     }
 
   // Try to evict interference from a cheaper alternative.
-  unsigned Cost = TRI->getCostPerUse(PhysReg);
+  unsigned Cost = SimplifyRegalloc? 0 : TRI->getCostPerUse(PhysReg);
 
   // Most registers have 0 additional cost.
   if (!Cost)
