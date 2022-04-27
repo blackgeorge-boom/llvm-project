@@ -443,6 +443,9 @@ protected:
   /// Threeway branch is profitable in this subtarget.
   bool ThreewayBranchProfitable = false;
 
+  /// AArch64 sized immediates in this subtarget.
+  bool AArch64SizedImm = false;
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -698,6 +701,7 @@ public:
   bool hasPCONFIG() const { return HasPCONFIG; }
   bool hasSGX() const { return HasSGX; }
   bool threewayBranchProfitable() const { return ThreewayBranchProfitable; }
+  bool aarch64SizedImm() const { return AArch64SizedImm; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }

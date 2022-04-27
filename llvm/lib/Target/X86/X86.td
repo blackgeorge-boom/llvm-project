@@ -450,6 +450,14 @@ def FeatureMergeToThreeWayBranch : SubtargetFeature<"merge-to-threeway-branch",
                                         "Merge branches to a three-way "
                                         "conditional branch">;
 
+// Immediates in instructions have the same size as in AArch64.
+// Otherwise, a register is used to hold the larger immediates.
+// Currently supported only for instructions that are using constant values.
+def FeatureAArch64SizedImmediates : SubtargetFeature<"aarch64-sized-imm",
+                                        "AArch64SizedImm", "true",
+                                        "Can encode only the immediates supported "
+                                        " in AArch64 (12-bit with optional 12 shift)">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont
