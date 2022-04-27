@@ -330,7 +330,9 @@ namespace {
       // Do not want to hoist if we're not optimizing for size.
       // TODO: We'd like to remove this restriction.
       // See the comment in X86InstrInfo.td for more info.
-      if (!OptForSize)
+      // However, try to hoist if we are trying to keep the same
+      // immediate size as in AArch64.
+      if (!OptForSize && !Subtarget->aarch64SizedImm())
         return false;
 
       // Walk all the users of the immediate.
@@ -338,6 +340,36 @@ namespace {
            UE = N->use_end(); (UI != UE) && (UseCount < 2); ++UI) {
 
         SDNode *User = *UI;
+
+        // If the instruction is handling constants, check if you need
+        // to avoid generating an instruction with a large immediate
+        // (i.e., an immediate with more than 12 bits size and that is not a value shifted by 12).
+        // Currently, we are checking both `ConstantNodeValue` and `ConstantNodeValue + 1`,
+        // because in comparisons AArch64 will try to generate a compared value that is
+        // a shift of 12, by choosing whether to compare with equality or not.
+        // Example:
+        // `i < 4096*3` generates:
+        // cmp	w8, #0x3, lsl #12
+        // b.ge	#0x44 <create_seq+0x74>
+        // `i < 4096*3 + 1` generates:
+        // cmp	w8, #0x3, lsl #12
+        // b.gt	#0x44 <create_seq+0x74>
+        // In both cases, we got a value that is a shift of 12. So, X86 must not
+        // avoid generating a large immediate in this case and proceed as usual.
+        if (auto ConstantNode = dyn_cast<ConstantSDNode>(N)) {
+          auto ConstantNodeValue = ConstantNode->getSExtValue();
+          if (!isUIntN(12, ConstantNodeValue) &&
+              !isShiftedUInt<12, 12>(ConstantNodeValue) &&
+              !isShiftedUInt<12, 12>(ConstantNodeValue + 1)) {
+            return true;
+          }
+          else {
+            continue;
+          }
+        }
+        else {
+          continue;
+        }
 
         // This user is already selected. Count it as a legitimate use and
         // move on.
