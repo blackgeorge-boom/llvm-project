@@ -8209,6 +8209,10 @@ bool AArch64TargetLowering::isTruncateFree(EVT VT1, EVT VT2) const {
 /// Not profitable if I and it's user can form a FMA instruction
 /// because we prefer FMSUB/FMADD.
 bool AArch64TargetLowering::isProfitableToHoist(Instruction *I) const {
+
+  if (Subtarget->disableHoistInLowering())
+    return false;
+
   if (I->getOpcode() != Instruction::FMul)
     return true;
 
