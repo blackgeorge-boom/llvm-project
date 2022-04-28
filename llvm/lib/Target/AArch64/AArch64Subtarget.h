@@ -135,6 +135,7 @@ protected:
   bool HasBTI = false;
   bool HasRandGen = false;
   bool HasMTE = false;
+  bool DisableHoistInLowering = false;
 
   // Arm SVE2 extensions
   bool HasSVE2AES = false;
@@ -385,6 +386,7 @@ public:
   bool hasBTI() const { return HasBTI; }
   bool hasRandGen() const { return HasRandGen; }
   bool hasMTE() const { return HasMTE; }
+  bool disableHoistInLowering() const { return DisableHoistInLowering; }
   // Arm SVE2 extensions
   bool hasSVE2AES() const { return HasSVE2AES; }
   bool hasSVE2SM4() const { return HasSVE2SM4; }
