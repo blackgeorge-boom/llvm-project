@@ -345,6 +345,9 @@ def FeatureRandGen : SubtargetFeature<"rand", "HasRandGen",
 def FeatureMTE : SubtargetFeature<"mte", "HasMTE",
     "true", "Enable Memory Tagging Extension" >;
 
+def FeatureDisableHoistInLowering : SubtargetFeature<"disable-hoist-in-lowering", "DisableHoistInLowering",
+    "true", "Disable hoisting of instructions while lowering the IR.">;
+
 //===----------------------------------------------------------------------===//
 // Architectures.
 //
