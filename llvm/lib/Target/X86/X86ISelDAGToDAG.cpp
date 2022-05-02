@@ -364,6 +364,15 @@ namespace {
             return true;
           }
           else {
+            // We want to count stores of immediates as real uses.
+            if (User->getOpcode() == ISD::STORE &&
+                User->getOperand(1).getNode() == N) {
+              UseCount++;
+            }
+            else if (User->getOpcode() == ISD::CopyToReg &&
+                User->getOperand(2).getNode() == N) {
+              UseCount++;
+            }
             continue;
           }
         }
