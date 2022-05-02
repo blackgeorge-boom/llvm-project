@@ -147,7 +147,6 @@ def AArch64LocalRecover : SDNode<"ISD::LOCAL_RECOVER",
                                   SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>,
                                                        SDTCisInt<1>]>>;
 
-
 //===----------------------------------------------------------------------===//
 // AArch64-specific DAG Nodes.
 //
@@ -453,7 +452,7 @@ def ADJCALLSTACKUP : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
                             Sched<[]>;
 } // Defs = [SP], Uses = [SP], hasSideEffects = 1, isCodeGenOnly = 1
 
-let isReMaterializable = 1, isCodeGenOnly = 1 in {
+let isReMaterializable = 1, isCodeGenOnly = 1, isAsCheapAsAMove = 1 in {
 // FIXME: The following pseudo instructions are only needed because remat
 // cannot handle multiple instructions.  When that changes, they can be
 // removed, along with the AArch64Wrapper node.
@@ -505,7 +504,7 @@ def ADDlowTLS
                                             tglobaltlsaddr:$low))]>,
       Sched<[WriteAdr]>;
 
-} // isReMaterializable, isCodeGenOnly
+} // isReMaterializable, isCodeGenOnly, isAsCheapAsAMove
 
 def : Pat<(AArch64LOADgot tglobaltlsaddr:$addr),
           (LOADgot tglobaltlsaddr:$addr)>;
