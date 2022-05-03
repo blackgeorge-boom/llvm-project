@@ -1055,7 +1055,7 @@ def relocImm16_su : PatLeaf<(i16 relocImm), [{
     return !shouldAvoidImmediateInstFormsForSize(N);
 }]>;
 def relocImm32_su : PatLeaf<(i32 relocImm), [{
-    return !shouldAvoidImmediateInstFormsForSize(N);
+    return !shouldAvoidImmediateInstFormsForSizeExceptZero(N);
 }]>;
 
 def i16immSExt8_su : PatLeaf<(i16immSExt8), [{

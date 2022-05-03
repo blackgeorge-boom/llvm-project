@@ -318,6 +318,16 @@ namespace {
         Segment = CurDAG->getRegister(0, MVT::i16);
     }
 
+    bool shouldAvoidImmediateInstFormsForSizeExceptZero(SDNode *N) const {
+      if (auto *ConstantNode = dyn_cast<ConstantSDNode>(N)) {
+        auto ConstantNodeValue = ConstantNode->getSExtValue();
+        if (ConstantNodeValue == 0)
+          return false;
+        return shouldAvoidImmediateInstFormsForSize(N);
+      }
+      return false;
+    }
+
     // Utility function to determine whether we should avoid selecting
     // immediate forms of instructions for better code size or not.
     // At a high level, we'd like to avoid such instructions when
