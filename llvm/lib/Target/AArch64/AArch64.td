@@ -348,6 +348,9 @@ def FeatureMTE : SubtargetFeature<"mte", "HasMTE",
 def FeatureDisableHoistInLowering : SubtargetFeature<"disable-hoist-in-lowering", "DisableHoistInLowering",
     "true", "Disable hoisting of instructions while lowering the IR.">;
 
+def FeatureDisableFPImmMaterialize : SubtargetFeature<"disable-fp-imm-materialize", "DisableFPImmMaterialize",
+    "true", "Disable materialization of non-zero floating-point immediates.">;
+
 //===----------------------------------------------------------------------===//
 // Architectures.
 //
