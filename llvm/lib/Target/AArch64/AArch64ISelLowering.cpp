@@ -5497,6 +5497,9 @@ bool AArch64TargetLowering::isFPImmLegal(const APFloat &Imm, EVT VT,
   // TODO: fmov h0, w0 is also legal, however on't have an isel pattern to
   //       generate that fmov.
 
+  if (Subtarget->disableFPImmMaterialize() && ImmInt != 0)
+    return false;
+
   // If we can not materialize in immediate field for fmov, check if the
   // value can be encoded as the immediate operand of a logical instruction.
   // The immediate value will be created with either MOVZ, MOVN, or ORR.
