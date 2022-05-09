@@ -614,7 +614,7 @@ public:
     resetDataLayout(IsX32
                         ? "e-m:e-p:32:32-i64:64-f80:128-n8:16:32:64-S128"
                         : IsWinCOFF ? "e-m:w-i64:64-f80:128-n8:16:32:64-S128"
-                                    : "e-m:e-i64:64-f80:128-n8:16:32:64-S128");
+                                    : "e-m:e-i8:8:32-i64:64-f80:128-n8:16:32:64-S128");
 
     // Use fpret only for long double.
     RealTypeUsesObjCFPRet = (1 << TargetInfo::LongDouble);

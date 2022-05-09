@@ -60,6 +60,11 @@ static cl::opt<bool> EnableCondBrFoldingPass("x86-condbr-folding",
                                         "folding pass"),
                                cl::init(false), cl::Hidden);
 
+static cl::opt<bool> AlignBytesToFour("align-bytes-to-four",
+                                cl::desc("Sets the preferred alignment of"
+                                         "one-byte sized stack objects to four bytes."),
+                                cl::init(false), cl::Hidden);
+
 extern "C" void LLVMInitializeX86Target() {
   // Register the target.
   RegisterTargetMachine<X86TargetMachine> X(getTheX86_32Target());
@@ -117,8 +122,11 @@ static std::string computeDataLayout(const Triple &TT) {
     Ret += "-p:32:32";
 
   // Some ABIs align 64 bit integers and doubles to 64 bits, others to 32.
-  if (TT.isArch64Bit() || TT.isOSWindows() || TT.isOSNaCl())
+  if (TT.isArch64Bit() || TT.isOSWindows() || TT.isOSNaCl()) {
+    if (AlignBytesToFour)
+      Ret += "-i8:8:32";
     Ret += "-i64:64";
+  }
   else if (TT.isOSIAMCU())
     Ret += "-i64:32-f64:32";
   else
