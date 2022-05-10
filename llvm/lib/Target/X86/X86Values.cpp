@@ -171,6 +171,8 @@ MachineLiveValPtr X86Values::getMachineValue(const MachineInstr *MI) const {
   case X86::MOV32ri64:
     // TODO the upper 32 bits of this reference are supposed to be masked
     MO = &MI->getOperand(1);
+    if (MO->isImm())
+      Val = new MachineImmediate(8, MO->getImm(), MI, false);
     if(TargetValues::isSymbolValue(MO))
       Val = new MachineSymbolRef(*MO, false, MI);
     break;
