@@ -11,11 +11,14 @@
 #include "llvm/BinaryFormat/ELF.h"
 #include "llvm/MC/MCAsmInfo.h"
 #include "llvm/MC/MCExpr.h"
+#include "llvm/Support/Debug.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
 #include <cassert>
 
 using namespace llvm;
+
+#define DEBUG_TYPE "MCSectionELF"
 
 // Decides whether a '.section' directive
 // should be printed before the section name.
@@ -65,10 +68,10 @@ void MCSectionELF::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
 
   OS << "\t.section\t";
   printName(OS, getSectionName());
+  LLVM_DEBUG(dbgs() << "switching to section: " << getSectionName() << "\n");
 
   // Handle the weird solaris syntax if desired.
-  if (MAI.usesSunStyleELFSectionSwitchSyntax() &&
-      !(Flags & ELF::SHF_MERGE)) {
+  if (MAI.usesSunStyleELFSectionSwitchSyntax() && !(Flags & ELF::SHF_MERGE)) {
     if (Flags & ELF::SHF_ALLOC)
       OS << ",#alloc";
     if (Flags & ELF::SHF_EXECINSTR)
@@ -161,6 +164,14 @@ void MCSectionELF::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
                        " for section " + getSectionName());
 
   if (EntrySize) {
+    LLVM_DEBUG({
+      if (!(Flags & ELF::SHF_MERGE)) {
+        dbgs()
+            << "Section \"" << getSectionName()
+            << "\" is not marked as mergeable even though entry size is known ("
+            << EntrySize << " bits)";
+      }
+    });
     assert(Flags & ELF::SHF_MERGE);
     OS << "," << EntrySize;
   }
