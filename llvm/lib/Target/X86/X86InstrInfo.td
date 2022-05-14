@@ -988,6 +988,8 @@ def HasMFence    : Predicate<"Subtarget->hasMFence()">;
 def UseRetpolineIndirectCalls : Predicate<"Subtarget->useRetpolineIndirectCalls()">;
 def NotUseRetpolineIndirectCalls : Predicate<"!Subtarget->useRetpolineIndirectCalls()">;
 
+def MultiplyWithImm : Predicate<"Subtarget->hasMultiplyWithImm()">;
+
 //===----------------------------------------------------------------------===//
 // X86 Instruction Format Definitions.
 //

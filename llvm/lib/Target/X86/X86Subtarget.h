@@ -446,6 +446,9 @@ protected:
   /// AArch64 sized immediates in this subtarget.
   bool AArch64SizedImm = false;
 
+  /// Multiplication of registers and immediates in this subtarget.
+  bool MultiplyWithImm = false;
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -702,6 +705,7 @@ public:
   bool hasSGX() const { return HasSGX; }
   bool threewayBranchProfitable() const { return ThreewayBranchProfitable; }
   bool aarch64SizedImm() const { return AArch64SizedImm; }
+  bool hasMultiplyWithImm() const { return MultiplyWithImm; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }
