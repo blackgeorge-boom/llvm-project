@@ -198,6 +198,7 @@ let Defs = [EFLAGS] in {
 // first so that they are slightly preferred to the ri forms.
 
 // Register-Integer Signed Integer Multiply
+let Predicates = [MultiplyWithImm] in {
 def IMUL16rri8 : Ii8<0x6B, MRMSrcReg,                       // GR16 = GR16*I8
                      (outs GR16:$dst), (ins GR16:$src1, i16i8imm:$src2),
                      "imul{w}\t{$src2, $src1, $dst|$dst, $src1, $src2}",
@@ -234,6 +235,7 @@ def IMUL64rri32 : RIi32S<0x69, MRMSrcReg,                    // GR64 = GR64*I32
                          [(set GR64:$dst, EFLAGS,
                              (X86smul_flag GR64:$src1, i64immSExt32:$src2))]>,
                          Sched<[WriteIMul64Imm]>;
+} // Predicates
 
 // Memory-Integer Signed Integer Multiply
 def IMUL16rmi8 : Ii8<0x6B, MRMSrcMem,                       // GR16 = [mem16]*I8

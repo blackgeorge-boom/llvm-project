@@ -458,6 +458,12 @@ def FeatureAArch64SizedImmediates : SubtargetFeature<"aarch64-sized-imm",
                                         "Can encode only the immediates supported "
                                         " in AArch64 (12-bit with optional 12 shift)">;
 
+// Instructions with multiplication between register and immediate are supported.
+// AArch64 does not support this.
+def FeatureMultiplyWithImm : SubtargetFeature<"multiply-with-imm",
+                                        "MultiplyWithImm", "true",
+                                        "Multiplication of registers and immediates is supported">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

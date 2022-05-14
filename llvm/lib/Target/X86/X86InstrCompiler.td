@@ -2037,6 +2037,7 @@ def : Pat<(mul GR64:$src1, (loadi64 addr:$src2)),
           (IMUL64rm GR64:$src1, addr:$src2)>;
 
 // mul reg, imm
+let Predicates = [MultiplyWithImm] in {
 def : Pat<(mul GR16:$src1, imm:$src2),
           (IMUL16rri GR16:$src1, imm:$src2)>;
 def : Pat<(mul GR32:$src1, imm:$src2),
@@ -2049,6 +2050,7 @@ def : Pat<(mul GR64:$src1, i64immSExt8:$src2),
           (IMUL64rri8 GR64:$src1, i64immSExt8:$src2)>;
 def : Pat<(mul GR64:$src1, i64immSExt32:$src2),
           (IMUL64rri32 GR64:$src1, i64immSExt32:$src2)>;
+} // Predicates
 
 // reg = mul mem, imm
 def : Pat<(mul (loadi16 addr:$src1), imm:$src2),
