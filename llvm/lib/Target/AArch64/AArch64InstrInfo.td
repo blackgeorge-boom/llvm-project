@@ -1647,7 +1647,7 @@ def : InstAlias<"cneg $dst, $src, $cc",
 //===----------------------------------------------------------------------===//
 // PC-relative instructions.
 //===----------------------------------------------------------------------===//
-let isReMaterializable = 1 in {
+let isReMaterializable = 0, isAsCheapAsAMove = 1 in {
 let hasSideEffects = 0, mayStore = 0, mayLoad = 0 in {
 def ADR  : ADRI<0, "adr", adrlabel,
                 [(set GPR64:$Xd, (AArch64adr tglobaladdr:$label))]>;
@@ -1655,7 +1655,7 @@ def ADR  : ADRI<0, "adr", adrlabel,
 
 def ADRP : ADRI<1, "adrp", adrplabel,
                 [(set GPR64:$Xd, (AArch64adrp tglobaladdr:$label))]>;
-} // isReMaterializable = 1
+} // isReMaterializable = 0, isAsCheapAsAMove = 1
 
 // page address of a constant pool entry, block address
 def : Pat<(AArch64adr tconstpool:$cp), (ADR tconstpool:$cp)>;
