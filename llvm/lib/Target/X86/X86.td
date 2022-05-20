@@ -464,6 +464,12 @@ def FeatureMultiplyWithImm : SubtargetFeature<"multiply-with-imm",
                                         "MultiplyWithImm", "true",
                                         "Multiplication of registers and immediates is supported">;
 
+// Moving non-zero immediates directly to memory is supported.
+// AArch64 does not support this.
+def FeatureMoveNonZeroImmToMem: SubtargetFeature<"non-zero-imm-to-mem",
+                                        "MoveNonZeroImmToMem", "true",
+                                        "Moving non-zero immediates to memory is supported">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

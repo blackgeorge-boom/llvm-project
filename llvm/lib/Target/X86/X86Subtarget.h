@@ -449,6 +449,9 @@ protected:
   /// Multiplication of registers and immediates in this subtarget.
   bool MultiplyWithImm = false;
 
+  /// Move directly non-zero immediates to memory in this subtarget.
+  bool MoveNonZeroImmToMem = false;
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -706,6 +709,7 @@ public:
   bool threewayBranchProfitable() const { return ThreewayBranchProfitable; }
   bool aarch64SizedImm() const { return AArch64SizedImm; }
   bool hasMultiplyWithImm() const { return MultiplyWithImm; }
+  bool hasMoveNonZeroImmToMem() const { return MoveNonZeroImmToMem; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }

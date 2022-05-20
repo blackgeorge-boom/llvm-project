@@ -1060,6 +1060,10 @@ def relocImm32_su : PatLeaf<(i32 relocImm), [{
     return !shouldAvoidImmediateInstFormsForSizeExceptZero(N);
 }]>;
 
+def relocImm32_su_for_mov : PatLeaf<(i32 relocImm), [{
+    return useImmediateInstForms(N);
+}]>;
+
 def i16immSExt8_su : PatLeaf<(i16immSExt8), [{
     return !shouldAvoidImmediateInstFormsForSize(N);
 }]>;
@@ -1575,7 +1579,7 @@ def MOV16mi : Ii16<0xC7, MRM0m, (outs), (ins i16mem:$dst, i16imm:$src),
                    [(store (i16 relocImm16_su:$src), addr:$dst)]>, OpSize16;
 def MOV32mi : Ii32<0xC7, MRM0m, (outs), (ins i32mem:$dst, i32imm:$src),
                    "mov{l}\t{$src, $dst|$dst, $src}",
-                   [(store (i32 relocImm32_su:$src), addr:$dst)]>, OpSize32;
+                   [(store (i32 relocImm32_su_for_mov:$src), addr:$dst)]>, OpSize32;
 def MOV64mi32 : RIi32S<0xC7, MRM0m, (outs), (ins i64mem:$dst, i64i32imm:$src),
                        "mov{q}\t{$src, $dst|$dst, $src}",
                        [(store i64relocImmSExt32_su:$src, addr:$dst)]>,

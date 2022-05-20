@@ -318,6 +318,16 @@ namespace {
         Segment = CurDAG->getRegister(0, MVT::i16);
     }
 
+    bool useImmediateInstForms(SDNode *N) const {
+      if (Subtarget->hasMoveNonZeroImmToMem())
+        return !shouldAvoidImmediateInstFormsForSizeExceptZero(N);
+      if (auto *ConstantNode = dyn_cast<ConstantSDNode>(N)) {
+        auto ConstantNodeValue = ConstantNode->getSExtValue();
+        return ConstantNodeValue == 0;
+      }
+      return true;
+    }
+
     bool shouldAvoidImmediateInstFormsForSizeExceptZero(SDNode *N) const {
       if (auto *ConstantNode = dyn_cast<ConstantSDNode>(N)) {
         auto ConstantNodeValue = ConstantNode->getSExtValue();
