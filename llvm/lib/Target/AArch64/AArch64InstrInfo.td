@@ -147,6 +147,9 @@ def AArch64LocalRecover : SDNode<"ISD::LOCAL_RECOVER",
                                   SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>,
                                                        SDTCisInt<1>]>>;
 
+def TempRegsADRP        : Predicate<"Subtarget->hasTempRegsADRP()">;
+def NotTempRegsADRP     : Predicate<"!Subtarget->hasTempRegsADRP()">;
+
 //===----------------------------------------------------------------------===//
 // AArch64-specific DAG Nodes.
 //
@@ -1647,14 +1650,15 @@ def : InstAlias<"cneg $dst, $src, $cc",
 //===----------------------------------------------------------------------===//
 // PC-relative instructions.
 //===----------------------------------------------------------------------===//
-let isReMaterializable = 0, isAsCheapAsAMove = 1 in {
+
+let isReMaterializable = 1, isAsCheapAsAMove = 1 in {
 let hasSideEffects = 0, mayStore = 0, mayLoad = 0 in {
 def ADR  : ADRI<0, "adr", adrlabel,
-                [(set GPR64:$Xd, (AArch64adr tglobaladdr:$label))]>;
+                [(set GPR64temp:$Xd, (AArch64adr tglobaladdr:$label))]>;
 } // hasSideEffects = 0
 
 def ADRP : ADRI<1, "adrp", adrplabel,
-                [(set GPR64:$Xd, (AArch64adrp tglobaladdr:$label))]>;
+                [(set GPR64temp:$Xd, (AArch64adrp tglobaladdr:$label))]>;
 } // isReMaterializable = 0, isAsCheapAsAMove = 1
 
 // page address of a constant pool entry, block address

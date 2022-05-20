@@ -1932,7 +1932,7 @@ class BaseCRC32<bit sf, bits<2> sz, bit C, RegisterClass StreamReg,
 //---
 
 class ADRI<bit page, string asm, Operand adr, list<dag> pattern>
-    : I<(outs GPR64:$Xd), (ins adr:$label), asm, "\t$Xd, $label", "",
+    : I<(outs GPR64temp:$Xd), (ins adr:$label), asm, "\t$Xd, $label", "",
         pattern>,
       Sched<[WriteI]> {
   bits<5>  Xd;
