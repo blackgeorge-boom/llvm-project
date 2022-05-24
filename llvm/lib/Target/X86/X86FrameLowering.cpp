@@ -23,6 +23,7 @@
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineModuleInfo.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
+#include "llvm/CodeGen/RegisterScavenging.h"
 #include "llvm/CodeGen/WinEHFuncInfo.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Function.h"
@@ -2236,6 +2237,18 @@ void X86FrameLowering::determineCalleeSaves(MachineFunction &MF,
     if (STI.isTarget64BitILP32())
       BasePtr = getX86SubSuperRegister(BasePtr, 64);
     SavedRegs.set(BasePtr);
+  }
+
+  bool ForceSpillScavengeSlot = MF.getTarget().Options.MCOptions.RegisterScavengingSpillSlot;
+
+  if (ForceSpillScavengeSlot) {
+    MachineFrameInfo &MFI = MF.getFrameInfo();
+    const TargetRegisterInfo *TRI = MF.getSubtarget().getRegisterInfo();
+    const TargetRegisterClass &RC = X86::GR64RegClass;
+    unsigned Size = TRI->getSpillSize(RC);
+    unsigned Align = TRI->getSpillAlignment(RC);
+    int FI = MFI.CreateStackObject(Size, Align, false);
+    RS->addScavengingFrameIndex(FI);
   }
 }
 

@@ -54,6 +54,8 @@ public:
   // FIXME: This should be tablegen'd like getDwarfRegNum is
   int getSEHRegNum(unsigned i) const;
 
+  bool requiresRegisterScavenging(const MachineFunction &MF) const override;
+
   /// Code Generation virtual methods...
   ///
   bool trackLivenessAfterRegAlloc(const MachineFunction &MF) const override;

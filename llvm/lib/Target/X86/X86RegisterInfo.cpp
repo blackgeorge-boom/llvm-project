@@ -72,6 +72,11 @@ X86RegisterInfo::X86RegisterInfo(const Triple &TT)
   }
 }
 
+bool X86RegisterInfo::requiresRegisterScavenging(
+    const MachineFunction &MF) const {
+  return true;
+}
+
 bool
 X86RegisterInfo::trackLivenessAfterRegAlloc(const MachineFunction &MF) const {
   // ExecutionDomainFix, BreakFalseDeps and PostRAScheduler require liveness.

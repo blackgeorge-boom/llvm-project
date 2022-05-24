@@ -2139,14 +2139,18 @@ void AArch64FrameLowering::determineCalleeSaves(MachineFunction &MF,
   if (BigStack || !CanEliminateFrame || RegInfo->cannotEliminateFrame(MF))
     AFI->setHasStackFrame(true);
 
+  bool ForceSpillScavengingSlot = MF.getTarget().Options.MCOptions.RegisterScavengingSpillSlot;
+
   // Estimate if we might need to scavenge a register at some point in order
   // to materialize a stack offset. If so, either spill one additional
   // callee-saved register or reserve a special spill slot to facilitate
   // register scavenging. If we already spilled an extra callee-saved register
   // above to keep the number of spills even, we don't need to do anything else
   // here.
-  if (BigStack) {
-    if (!ExtraCSSpill && UnspilledCSGPR != AArch64::NoRegister) {
+  // However, if we must spill a register scavenging slot no matter what,
+  // avoid checking for an available CSR and spill the slot directly.
+  if (BigStack || ForceSpillScavengingSlot) {
+    if (!ExtraCSSpill && UnspilledCSGPR != AArch64::NoRegister && !ForceSpillScavengingSlot) {
       LLVM_DEBUG(dbgs() << "Spilling " << printReg(UnspilledCSGPR, RegInfo)
                         << " to get a scratch register.\n");
       SavedRegs.set(UnspilledCSGPR);
@@ -2160,7 +2164,9 @@ void AArch64FrameLowering::determineCalleeSaves(MachineFunction &MF,
 
     // If we didn't find an extra callee-saved register to spill, create
     // an emergency spill slot.
-    if (!ExtraCSSpill || MF.getRegInfo().isPhysRegUsed(ExtraCSSpill)) {
+    // Also, check if we must spill an emergency spill slot no matter what.
+    if (!ExtraCSSpill || MF.getRegInfo().isPhysRegUsed(ExtraCSSpill) ||
+        ForceSpillScavengingSlot) {
       const TargetRegisterInfo *TRI = MF.getSubtarget().getRegisterInfo();
       const TargetRegisterClass &RC = AArch64::GPR64RegClass;
       unsigned Size = TRI->getSpillSize(RC);
