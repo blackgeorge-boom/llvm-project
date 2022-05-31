@@ -45,6 +45,9 @@
 #include "llvm/CodeGen/TargetLowering.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/Support/Debug.h"
+#include "../AArch64/AArch64ExpandImm.h"
+#include "../AArch64/MCTargetDesc/AArch64AddressingModes.h"
+
 
 using namespace llvm;
 
@@ -2771,6 +2774,21 @@ int X86TTIImpl::getMinMaxReductionCost(Type *ValTy, Type *CondTy,
 /// method might only calculate a fraction of a larger immediate. Therefore it
 /// is valid to return a cost of ZERO.
 int X86TTIImpl::getIntImmCost(int64_t Val) {
+
+  if (ST->hasAArch64ConstantCostModel()) {
+    // Check if the immediate can be encoded within an instruction.
+    if (Val == 0 || AArch64_AM::isLogicalImmediate(Val, 64))
+      return 0;
+
+    if (Val < 0)
+      Val = ~Val;
+
+    // Calculate how many moves we will need to materialize this constant.
+    SmallVector<AArch64_IMM::ImmInsnModel, 4> Insn;
+    AArch64_IMM::expandMOVImm(Val, 64, Insn);
+    return Insn.size();
+  }
+
   if (Val == 0)
     return TTI::TCC_Free;
 
@@ -2839,6 +2857,10 @@ int X86TTIImpl::getIntImmCost(unsigned Opcode, unsigned Idx, const APInt &Imm,
     ImmIdx = 0;
     break;
   case Instruction::ICmp:
+    if (ST->hasAArch64ConstantCostModel()) {
+      ImmIdx = 1;
+      break;
+    }
     // This is an imperfect hack to prevent constant hoisting of
     // compares that might be trying to check if a 64-bit value fits in
     // 32-bits. The backend can optimize these cases using a right shift by 32.
@@ -2852,6 +2874,10 @@ int X86TTIImpl::getIntImmCost(unsigned Opcode, unsigned Idx, const APInt &Imm,
     ImmIdx = 1;
     break;
   case Instruction::And:
+    if (ST->hasAArch64ConstantCostModel()) {
+      ImmIdx = 1;
+      break;
+    }
     // We support 64-bit ANDs with immediates with 32-bits of leading zeroes
     // by using a 32-bit operation with implicit zero extension. Detect such
     // immediates here as the normal path expects bit 31 to be sign extended.
@@ -2861,6 +2887,10 @@ int X86TTIImpl::getIntImmCost(unsigned Opcode, unsigned Idx, const APInt &Imm,
     break;
   case Instruction::Add:
   case Instruction::Sub:
+    if (ST->hasAArch64ConstantCostModel()) {
+      ImmIdx = 1;
+      break;
+    }
     // For add/sub, we can use the opposite instruction for INT32_MIN.
     if (Idx == 1 && Imm.getBitWidth() == 64 && Imm.getZExtValue() == 0x80000000)
       return TTI::TCC_Free;
@@ -2870,6 +2900,10 @@ int X86TTIImpl::getIntImmCost(unsigned Opcode, unsigned Idx, const APInt &Imm,
   case Instruction::SDiv:
   case Instruction::URem:
   case Instruction::SRem:
+    if (ST->hasAArch64ConstantCostModel()) {
+      ImmIdx = 1;
+      break;
+    }
     // Division by constant is typically expanded later into a different
     // instruction sequence. This completely changes the constants.
     // Report them as "free" to stop ConstantHoist from marking them as opaque.
@@ -2930,6 +2964,13 @@ int X86TTIImpl::getIntImmCost(Intrinsic::ID IID, unsigned Idx, const APInt &Imm,
   case Intrinsic::usub_with_overflow:
   case Intrinsic::smul_with_overflow:
   case Intrinsic::umul_with_overflow:
+    if (ST->hasAArch64ConstantCostModel() && Idx == 1) {
+      int NumConstants = (BitSize + 63) / 64;
+      int Cost = X86TTIImpl::getIntImmCost(Imm, Ty);
+      return (Cost <= NumConstants * TTI::TCC_Basic)
+             ? static_cast<int>(TTI::TCC_Free)
+             : Cost;
+    }
     if ((Idx == 1) && Imm.getBitWidth() <= 64 && isInt<32>(Imm.getSExtValue()))
       return TTI::TCC_Free;
     break;

@@ -452,6 +452,10 @@ protected:
   /// Move directly non-zero immediates to memory in this subtarget.
   bool MoveNonZeroImmToMem = false;
 
+  /// Follow AArch64 cost model for constants in this subtarget.
+  bool AArch64ConstantCostModel = false;
+
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -710,6 +714,7 @@ public:
   bool aarch64SizedImm() const { return AArch64SizedImm; }
   bool hasMultiplyWithImm() const { return MultiplyWithImm; }
   bool hasMoveNonZeroImmToMem() const { return MoveNonZeroImmToMem; }
+  bool hasAArch64ConstantCostModel() const { return AArch64ConstantCostModel; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }

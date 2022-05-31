@@ -470,6 +470,11 @@ def FeatureMoveNonZeroImmToMem: SubtargetFeature<"non-zero-imm-to-mem",
                                         "MoveNonZeroImmToMem", "true",
                                         "Moving non-zero immediates to memory is supported">;
 
+// Use the constant cost model employed by AArch64.
+def FeatureAArch64ConstantCostModel: SubtargetFeature<"aarch64-constant-cost-model",
+                                        "AArch64ConstantCostModel", "true",
+                                        "The constant cost model of AArch64 is supported">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

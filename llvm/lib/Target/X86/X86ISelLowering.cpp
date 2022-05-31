@@ -28710,6 +28710,19 @@ bool X86TargetLowering::isLegalICmpImmediate(int64_t Imm) const {
 }
 
 bool X86TargetLowering::isLegalAddImmediate(int64_t Imm) const {
+
+  // When hoisting constants in `ConstantHoist`, we need to have aligned
+  // behavior between X86 and AArch64 on this function.
+  if (Subtarget.hasAArch64ConstantCostModel()) {
+    // Same encoding for add/sub, just flip the sign.
+    Imm = std::abs(Imm);
+    bool IsLegal =
+        ((Imm >> 12) == 0 || ((Imm & 0xfff) == 0 && Imm >> 24 == 0));
+    LLVM_DEBUG(dbgs() << "Is " << Imm << " legal add imm: "
+                      << (IsLegal ? "yes" : "no") << "\n");
+    return IsLegal;
+  }
+
   // Can also use sub to handle negated immediates.
   return isInt<32>(Imm);
 }
