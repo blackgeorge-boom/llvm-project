@@ -455,6 +455,8 @@ protected:
   /// Follow AArch64 cost model for constants in this subtarget.
   bool AArch64ConstantCostModel = false;
 
+  /// Simple register offset addressing in this subtarget.
+  bool SimpleRegOffsetAddr = false;
 
   /// What processor and OS we're targeting.
   Triple TargetTriple;
@@ -715,6 +717,7 @@ public:
   bool hasMultiplyWithImm() const { return MultiplyWithImm; }
   bool hasMoveNonZeroImmToMem() const { return MoveNonZeroImmToMem; }
   bool hasAArch64ConstantCostModel() const { return AArch64ConstantCostModel; }
+  bool hasSimpleRegOffsetAddr() const { return SimpleRegOffsetAddr; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }

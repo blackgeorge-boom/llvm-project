@@ -475,6 +475,20 @@ def FeatureAArch64ConstantCostModel: SubtargetFeature<"aarch64-constant-cost-mod
                                         "AArch64ConstantCostModel", "true",
                                         "The constant cost model of AArch64 is supported">;
 
+// Simplify addressing of instructions in the case of register offset for X86.
+// E.g., do not encode things like:
+//
+// mov    ebx,DWORD PTR [rbp+rax*4-0x30]
+//
+// but prefer something like:
+//
+// lea    r15,[rbp-0x30]
+// mov    ebx,DWORD PTR [r15+rax*4]
+//
+def FeatureSimpleRegOffsetAddr: SubtargetFeature<"simple-reg-offset-addr",
+                                        "SimpleRegOffsetAddr", "true",
+                                        "A simplified register offset addressing is supported">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

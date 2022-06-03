@@ -2334,6 +2334,25 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
     return false;
 
   getAddressOperands(AM, DL, VT, Base, Scale, Index, Disp, Segment);
+
+  // After we select instructions for something like:
+  //
+  //   t8: i64 = shl t37, Constant:i8<2>
+  //    t9: i64 = add FrameIndex:i64<1>, t8
+  //  t10: i32,ch = load<(load 4 from %ir.arrayidx)> t0, t9, undef:i64
+  //
+  // instead of lowering FrameIndex:i64<1> to TargetFrameIndex:i64<1>,
+  // we reset the child node to stay as FrameIndex.
+  // This will be lowered subsequently to a LEA instruction. So, instead of encoding
+  // the whole addressing as [base + scaled register + offset], we will have
+  // a separate LEA for base + offset, which is closer to AArch64 does.
+  // This reset leads to a redundant node in the ISel DAG, but it is necessary
+  // for a similar address space layout.
+  if (N.getOpcode() == ISD::ADD && Subtarget->hasSimpleRegOffsetAddr()) {
+    SDValue LHS = N.getOperand(0);
+    Base = LHS;
+  }
+
   return true;
 }
 
