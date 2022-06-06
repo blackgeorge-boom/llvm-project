@@ -4,8 +4,8 @@ SOURCE_DIR=$1
 BUILD_DIR=$2
 INSTALL_DIR=$3
 
-BUILD_TYPE=Debug
-[[ ! -z $4 ]] && BUILD_TYPE=RelWithDebInfo
+BUILD_TYPE=RelWithDebInfo
+[[ ! -z $4 ]] && BUILD_TYPE=$4
 
 cmake \
   -G Ninja \
