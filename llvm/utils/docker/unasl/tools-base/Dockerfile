@@ -19,7 +19,8 @@ RUN grep deb /etc/apt/sources.list | \
 RUN apt-get update && \
       apt-get install -y --no-install-recommends ca-certificates gnupg tzdata \
       build-essential python wget subversion unzip zip nano ninja-build git \
-      flex bison texinfo gdb python3 \
+      flex bison texinfo gdb python3 cmake binutils \
+      gcc-x86-64-linux-gnu g++-x86-64-linux-gnu \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu && \
       rm -rf /var/lib/apt/lists/*
 
@@ -69,6 +70,7 @@ RUN apt-get update && \
       apt-get install -y --no-install-recommends binutils flex bison tzdata \
       texinfo gdb python3 libstdc++-11-dev libstdc++-11-dev-arm64-cross python \
       build-essential wget unzip zip ca-certificates gnupg \
+      gcc-x86-64-linux-gnu g++-x86-64-linux-gnu \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu && \
       rm -rf /var/lib/apt/lists/*
 
