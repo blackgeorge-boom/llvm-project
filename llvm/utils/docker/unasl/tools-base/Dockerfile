@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
 # stage 1
-FROM ubuntu:21.10 as tools-base-builder
+ARG ARCH=
+FROM ${ARCH}ubuntu:21.10 as tools-base-builder
 LABEL maintainer "UnASL Developers"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -57,7 +58,8 @@ RUN git clone https://github.com/compor/popcorn-compiler.git ${POPCORN_DIR} && \
 
 
 ## stage 2
-FROM ubuntu:21.10 as tools-base
+ARG ARCH=
+FROM ${ARCH}ubuntu:21.10 as tools-base
 LABEL maintainer "UnASL Developers"
 
 ENV DEBIAN_FRONTEND=noninteractive
