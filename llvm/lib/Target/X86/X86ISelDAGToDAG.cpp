@@ -2350,6 +2350,9 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
   // for a similar address space layout.
   if (N.getOpcode() == ISD::ADD && Subtarget->hasSimpleRegOffsetAddr()) {
     SDValue LHS = N.getOperand(0);
+    SDValue RHS = N.getOperand(1);
+    if (LHS.getOpcode() != ISD::SHL && RHS.getOpcode() != ISD::SHL)
+      return true;
     Base = LHS;
   }
 
