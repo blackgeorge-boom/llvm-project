@@ -489,6 +489,19 @@ def FeatureSimpleRegOffsetAddr: SubtargetFeature<"simple-reg-offset-addr",
                                         "SimpleRegOffsetAddr", "true",
                                         "A simplified register offset addressing is supported">;
 
+// Force the use of vector types.
+// E.g., this favors the generation of code like:
+//   movups xmm0,XMMWORD PTR [rax+rax*1]
+//   movaps XMMWORD PTR [rbp-0x50],xmm0
+// instead of:
+//   mov    rdx,QWORD PTR [rax+rax*1]
+//   mov    QWORD PTR [rbp-0x48],rdx ; i64
+//   mov    rax,QWORD PTR [rcx+rax*1+0x8]
+//   mov    QWORD PTR [rbp-0x40],rax ; i64
+def FeatureForceVectorMemOp: SubtargetFeature<"force-vector-mem-op",
+                                        "ForceVectorMemOp", "true",
+                                        "Favors the use of vector memory operand types.">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

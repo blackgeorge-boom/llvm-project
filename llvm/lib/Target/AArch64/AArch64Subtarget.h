@@ -138,6 +138,7 @@ protected:
   bool DisableHoistInLowering = false;
   bool DisableFPImmMaterialize = false;
   bool TempRegsADRP = false;
+  bool AvoidF128 = false;
 
   // Arm SVE2 extensions
   bool HasSVE2AES = false;
@@ -391,6 +392,7 @@ public:
   bool disableHoistInLowering() const { return DisableHoistInLowering; }
   bool disableFPImmMaterialize() const { return DisableFPImmMaterialize; }
   bool hasTempRegsADRP() const { return TempRegsADRP; }
+  bool avoidF128() const { return AvoidF128; }
   // Arm SVE2 extensions
   bool hasSVE2AES() const { return HasSVE2AES; }
   bool hasSVE2SM4() const { return HasSVE2SM4; }

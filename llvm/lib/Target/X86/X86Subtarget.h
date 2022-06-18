@@ -458,6 +458,9 @@ protected:
   /// Simple register offset addressing in this subtarget.
   bool SimpleRegOffsetAddr = false;
 
+  /// Favors using vector memory operand types.
+  bool ForceVectorMemOp = false;
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -718,6 +721,7 @@ public:
   bool hasMoveNonZeroImmToMem() const { return MoveNonZeroImmToMem; }
   bool hasAArch64ConstantCostModel() const { return AArch64ConstantCostModel; }
   bool hasSimpleRegOffsetAddr() const { return SimpleRegOffsetAddr; }
+  bool forceVectorMemOp() const { return ForceVectorMemOp; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }

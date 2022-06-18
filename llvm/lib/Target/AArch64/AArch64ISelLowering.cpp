@@ -8738,6 +8738,7 @@ EVT AArch64TargetLowering::getOptimalMemOpType(
       !FuncAttributes.hasFnAttribute(Attribute::NoImplicitFloat);
   bool CanUseNEON = Subtarget->hasNEON() && CanImplicitFloat;
   bool CanUseFP = Subtarget->hasFPARMv8() && CanImplicitFloat;
+  bool AvoidF128 = Subtarget->avoidF128();
   // Only use AdvSIMD to implement memset of 32-byte and above. It would have
   // taken one instruction to materialize the v2i64 zero and one store (with
   // restrictive addressing mode). Just do i64 stores.
@@ -8754,7 +8755,7 @@ EVT AArch64TargetLowering::getOptimalMemOpType(
   if (CanUseNEON && IsMemset && !IsSmallMemset &&
       AlignmentIsAcceptable(MVT::v2i64, 16))
     return MVT::v2i64;
-  if (CanUseFP && !IsSmallMemset && AlignmentIsAcceptable(MVT::f128, 16))
+  if (CanUseFP && !IsSmallMemset && AlignmentIsAcceptable(MVT::f128, 16) && !AvoidF128)
     return MVT::f128;
   if (Size >= 8 && AlignmentIsAcceptable(MVT::i64, 8))
     return MVT::i64;

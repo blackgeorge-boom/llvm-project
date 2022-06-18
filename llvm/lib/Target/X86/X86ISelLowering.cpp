@@ -2057,7 +2057,7 @@ EVT X86TargetLowering::getOptimalMemOpType(
     bool ZeroMemset, bool MemcpyStrSrc,
     const AttributeList &FuncAttributes) const {
   if (!FuncAttributes.hasFnAttribute(Attribute::NoImplicitFloat)) {
-    if (Size >= 16 && (!Subtarget.isUnalignedMem16Slow() ||
+    if (Size >= 16 && (!Subtarget.isUnalignedMem16Slow() || Subtarget.forceVectorMemOp() ||
                        ((DstAlign == 0 || DstAlign >= 16) &&
                         (SrcAlign == 0 || SrcAlign >= 16)))) {
       // FIXME: Check if unaligned 32-byte accesses are slow.

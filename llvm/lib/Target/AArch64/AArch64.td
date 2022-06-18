@@ -355,6 +355,18 @@ def FeatureDisableFPImmMaterialize : SubtargetFeature<"disable-fp-imm-materializ
 def FeatureTempRegsADRP : SubtargetFeature<"temp-regs-adrp", "TempRegsADRP",
     "true", "Use only temporary registers for ADR/ADRP (not MOVaddr) and treat those as cheap as a move.">;
 
+// This favors code like:
+//   ldrsw	x16, [sp, #0x20]
+//   ldr	x19, [sp, #0x48]
+//   add	x8, x8, x16, lsl #4
+//   ldp	x8, x16, [x8]
+//   stp	x8, x16, [sp, #0x8]  ; 2*i64
+// over:
+//   ldr	q0, [x8, x16, lsl #4]
+//   str	q0, [sp]
+def FeatureAvoidF128 : SubtargetFeature<"avoid-f128", "AvoidF128",
+    "true", "Avoid the use of f128 memory operand types.">;
+
 //===----------------------------------------------------------------------===//
 // Architectures.
 //
