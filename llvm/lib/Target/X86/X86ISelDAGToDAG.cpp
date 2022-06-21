@@ -2353,7 +2353,9 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
     SDValue RHS = N.getOperand(1);
     if (LHS.getOpcode() != ISD::SHL && RHS.getOpcode() != ISD::SHL)
       return true;
-    Base = LHS;
+    // ISD::ADD is commutative, so the FrameIndex<...>, which is the base address
+    // of the array, could be in either side.
+    Base = (LHS.getOpcode() == ISD::SHL)? RHS : LHS;
   }
 
   return true;
