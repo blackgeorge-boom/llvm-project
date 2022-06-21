@@ -2353,7 +2353,9 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
     SDValue RHS = N.getOperand(1);
     if (LHS.getOpcode() != ISD::SHL && RHS.getOpcode() != ISD::SHL)
       return true;
-    Base = LHS;
+    if (LHS.getOpcode() == X86ISD::WrapperRIP || RHS.getOpcode() == X86ISD::WrapperRIP)
+      return true;
+    Base = (LHS.getOpcode() == ISD::SHL)? RHS : LHS;
   }
 
   return true;
