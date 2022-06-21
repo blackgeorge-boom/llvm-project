@@ -2353,6 +2353,10 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
     SDValue RHS = N.getOperand(1);
     if (LHS.getOpcode() != ISD::SHL && RHS.getOpcode() != ISD::SHL)
       return true;
+    // If the array is global, do not reset the base address.
+    // X86/AArch64 behave similarly in this case (i.e., use adrp/lea).
+    if (LHS.getOpcode() == X86ISD::WrapperRIP || RHS.getOpcode() == X86ISD::WrapperRIP)
+      return true;
     // ISD::ADD is commutative, so the FrameIndex<...>, which is the base address
     // of the array, could be in either side.
     Base = (LHS.getOpcode() == ISD::SHL)? RHS : LHS;
@@ -3083,7 +3087,7 @@ bool X86DAGToDAGISel::foldLoadStoreIntoMemOperand(SDNode *Node) {
       bool IsNegOne = isAllOnesConstant(StoredVal.getOperand(1));
       // ADD/SUB with 1/-1 and carry flag isn't used can use inc/dec.
       if ((IsOne || IsNegOne) && hasNoCarryFlagUses(StoredVal.getValue(1))) {
-        unsigned NewOpc = 
+        unsigned NewOpc =
           ((Opc == X86ISD::ADD) == IsOne)
               ? SelectOpcode(X86::INC64m, X86::INC32m, X86::INC16m, X86::INC8m)
               : SelectOpcode(X86::DEC64m, X86::DEC32m, X86::DEC16m, X86::DEC8m);
