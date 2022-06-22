@@ -896,7 +896,17 @@ void AArch64FrameLowering::emitPrologue(MachineFunction &MF,
   unsigned FixedObject = (IsWin64 && !IsFunclet) ?
                          alignTo(AFI->getVarArgsGPRSize(), 16) : 0;
 
-  auto PrologueSaveSize = AFI->getCalleeSavedStackSize() + FixedObject;
+  bool ForceSpillScavengingSlot = MF.getTarget().Options.MCOptions.RegisterScavengingSpillSlot;
+  unsigned PrologueSaveSize;
+
+  // If the number of CSRs is odd, then the spill slot can go after the
+  // last CSR, at 16-byte alignment.
+  // Otherwise, it should go after the last CSR at 8-byte alignment.
+  if (ForceSpillScavengingSlot)
+    PrologueSaveSize = alignTo(AFI->getCalleeSavedStackSize(), 16) + FixedObject;
+  else
+    PrologueSaveSize = AFI->getCalleeSavedStackSize() + FixedObject;
+
   // All of the remaining stack allocations are for locals.
   AFI->setLocalStackSize(NumBytes - PrologueSaveSize);
   bool CombineSPBump = shouldCombineCSRLocalStackBump(MF, NumBytes);
@@ -1350,7 +1360,18 @@ void AArch64FrameLowering::emitEpilogue(MachineFunction &MF,
       (IsWin64 && !IsFunclet) ? alignTo(AFI->getVarArgsGPRSize(), 16) : 0;
 
   uint64_t AfterCSRPopSize = ArgumentPopSize;
-  auto PrologueSaveSize = AFI->getCalleeSavedStackSize() + FixedObject;
+
+  bool ForceSpillScavengingSlot = MF.getTarget().Options.MCOptions.RegisterScavengingSpillSlot;
+  unsigned PrologueSaveSize;
+
+  // If the number of CSRs is odd, then the spill slot can go after the
+  // last CSR, at 16-byte alignment.
+  // Otherwise, it should go after the last CSR at 8-byte alignment.
+  if (ForceSpillScavengingSlot)
+    PrologueSaveSize = alignTo(AFI->getCalleeSavedStackSize(), 16) + FixedObject;
+  else
+    PrologueSaveSize = AFI->getCalleeSavedStackSize() + FixedObject;
+
   // We cannot rely on the local stack size set in emitPrologue if the function
   // has funclets, as funclets have different local stack size requirements, and
   // the current value set in emitPrologue may be that of the containing
