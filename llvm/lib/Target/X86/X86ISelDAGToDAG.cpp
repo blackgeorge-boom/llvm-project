@@ -2355,7 +2355,9 @@ bool X86DAGToDAGISel::selectAddr(SDNode *Parent, SDValue N, SDValue &Base,
       return true;
     // If the array is global, do not reset the base address.
     // X86/AArch64 behave similarly in this case (i.e., use adrp/lea).
-    if (LHS.getOpcode() == X86ISD::WrapperRIP || RHS.getOpcode() == X86ISD::WrapperRIP)
+    // In general, target only the FrameIndex nodes (in multidimensional accesses
+    // you might have SHL nodes combined with further ADD nodes, under the parent ADD node).
+    if (LHS.getOpcode() != ISD::FrameIndex && RHS.getOpcode() != ISD::FrameIndex)
       return true;
     // ISD::ADD is commutative, so the FrameIndex<...>, which is the base address
     // of the array, could be in either side.
