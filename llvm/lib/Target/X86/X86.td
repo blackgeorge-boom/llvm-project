@@ -502,6 +502,11 @@ def FeatureForceVectorMemOp: SubtargetFeature<"force-vector-mem-op",
                                         "ForceVectorMemOp", "true",
                                         "Favors the use of vector memory operand types.">;
 
+// Avoid optimizing multiplication with constants like (2^n + 2/4/6).
+def FeatureAvoidOptimizingMulCase1: SubtargetFeature<"avoid-opt-mul-1",
+                                        "AvoidOptimizingMulCase1", "true",
+                                        "Avoid optimizing multiplication with (2^n + 2/4/6).">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont

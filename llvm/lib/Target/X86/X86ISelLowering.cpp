@@ -37314,7 +37314,7 @@ static SDValue reduceVMULWidth(SDNode *N, SelectionDAG &DAG,
 }
 
 static SDValue combineMulSpecial(uint64_t MulAmt, SDNode *N, SelectionDAG &DAG,
-                                 EVT VT, const SDLoc &DL) {
+                                 EVT VT, const SDLoc &DL, const X86Subtarget &Subtarget) {
 
   auto combineMulShlAddOrSub = [&](int Mult, int Shift, bool isAdd) {
     SDValue Result = DAG.getNode(X86ISD::MUL_IMM, DL, VT, N->getOperand(0),
@@ -37384,7 +37384,7 @@ static SDValue combineMulSpecial(uint64_t MulAmt, SDNode *N, SelectionDAG &DAG,
   // First check if this a sum of two power of 2s because that's easy. Then
   // count how many zeros are up to the first bit.
   // TODO: We can do this even without LEA at a cost of two shifts and an add.
-  if (isPowerOf2_64(MulAmt & (MulAmt - 1))) {
+  if (isPowerOf2_64(MulAmt & (MulAmt - 1)) && !Subtarget.avoidOptimizingMulCase1()) {
     unsigned ScaleShift = countTrailingZeros(MulAmt);
     if (ScaleShift >= 1 && ScaleShift < 4) {
       unsigned ShiftAmt = Log2_64((MulAmt & (MulAmt - 1)));
@@ -37588,7 +37588,7 @@ static SDValue combineMul(SDNode *N, SelectionDAG &DAG,
       NewMul = DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(0, DL, VT),
                            NewMul);
   } else if (!Subtarget.slowLEA())
-    NewMul = combineMulSpecial(C->getZExtValue(), N, DAG, VT, DL);
+    NewMul = combineMulSpecial(C->getZExtValue(), N, DAG, VT, DL, Subtarget);
 
   if (!NewMul) {
     assert(C->getZExtValue() != 0 &&

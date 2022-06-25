@@ -461,6 +461,9 @@ protected:
   /// Favors using vector memory operand types.
   bool ForceVectorMemOp = false;
 
+  /// Avoid optimizing mul with (2^n + 2/4/6)
+  bool AvoidOptimizingMulCase1 = false;
+
   /// What processor and OS we're targeting.
   Triple TargetTriple;
 
@@ -722,6 +725,7 @@ public:
   bool hasAArch64ConstantCostModel() const { return AArch64ConstantCostModel; }
   bool hasSimpleRegOffsetAddr() const { return SimpleRegOffsetAddr; }
   bool forceVectorMemOp() const { return ForceVectorMemOp; }
+  bool avoidOptimizingMulCase1() const { return AvoidOptimizingMulCase1; }
   bool hasINVPCID() const { return HasINVPCID; }
   bool hasENQCMD() const { return HasENQCMD; }
   bool useRetpolineIndirectCalls() const { return UseRetpolineIndirectCalls; }
