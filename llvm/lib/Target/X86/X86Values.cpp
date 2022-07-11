@@ -13,10 +13,15 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/CodeGen/TargetInstrInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
+#include "llvm/CodeGen/MachineConstantPool.h"
 
 #define DEBUG_TYPE "stacktransform"
 
 using namespace llvm;
+
+// Bitwise-conversions between floats & ints
+union IntFloat64 { double d; uint64_t i; };
+union IntFloat32 { float f; uint64_t i; };
 
 static TemporaryValue *getTemporaryReference(const MachineInstr *MI,
                                              const VirtRegMap *VRM,
@@ -202,6 +207,47 @@ MachineLiveValPtr X86Values::getMachineValue(const MachineInstr *MI) const {
        TargetValues::isSymbolValueConstant(MO2))
         Val = new MachineSymbolRef(*MO2, true, MI);
     break;
+  case X86::MOVSDrm_alt: {
+    unsigned Reg, Size;
+    int64_t Imm;
+    ValueGenInstList IL;
+
+    if (isRegOp(MI->getOperand(1 + X86::AddrBaseReg), X86::RIP)) {
+      if (!MI->getOperand(1 + X86::AddrDisp).isCPI()) {
+        LLVM_DEBUG(
+            dbgs() << "Unhandled displacement amount for PC-relative move\n");
+        break;
+      }
+      int Idx = MI->getOperand(1 + X86::AddrDisp).getIndex();
+      const MachineFunction *MF = MI->getParent()->getParent();
+      const MachineConstantPool *MCP = MF->getConstantPool();
+      const std::vector<MachineConstantPoolEntry> &CP = MCP->getConstants();
+      if (CP[Idx].isMachineConstantPoolEntry()) {
+        // TODO unhandled for now
+      } else {
+        const Constant *ConstVal = CP[Idx].Val.ConstVal;
+        if (isa<ConstantFP>(ConstVal)) {
+          const ConstantFP *FPVal = cast<ConstantFP>(ConstVal);
+          const APFloat &Flt = FPVal->getValueAPF();
+          switch (APFloat::getSizeInBits(Flt.getSemantics())) {
+          case 32: {
+            IntFloat32 I2F = {Flt.convertToFloat()};
+            Val = new MachineImmediate(4, I2F.i, MI, false);
+            break;
+          }
+          case 64: {
+            IntFloat64 I2D = {Flt.convertToDouble()};
+            Val = new MachineImmediate(8, I2D.i, MI, false);
+            break;
+          }
+          default:
+            break;
+          }
+        }
+      }
+    }
+    break;
+  }
   default:
     TII =  MI->getParent()->getParent()->getSubtarget().getInstrInfo();
     LLVM_DEBUG(dbgs() << "Unhandled opcode: "

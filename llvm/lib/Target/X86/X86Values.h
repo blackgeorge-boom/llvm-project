@@ -1,3 +1,6 @@
+#ifndef LLVM_LIB_TARGET_X86_X86VALUES_H
+#define LLVM_LIB_TARGET_X86_X86VALUES_H
+
 //===--------- X86TargetValues.cpp - X86 specific value generator ---------===//
 //
 //                     The LLVM Compiler Infrastructure
@@ -22,4 +25,6 @@ private:
   MachineLiveVal *genLEAInstructions(const MachineInstr *LEA) const;
 };
 
-}
+} // namespace llvm
+
+#endif

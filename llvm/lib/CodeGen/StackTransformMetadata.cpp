@@ -1332,13 +1332,82 @@ void StackTransformMetadata::findArchSpecificLiveVals() {
     }
 
     // Search for stack slots not handled by the stackmap
-    for(int SS = MFI->getObjectIndexBegin(), e = MFI->getObjectIndexEnd();
-        SS < e; SS++) {
-      if(UsedSS.count(SS) && !MFI->isDeadObjectIndex(SS) &&
-         isSSLiveAcrossInstr(SS, MICall) && CurSS.find(SS) == CurSS.end()) {
-        LLVM_DEBUG(dbgs() << "    + stack slot " << SS
-                     << " is live but not in stackmap\n";);
-        // TODO add arch-specific stack slot information to machine function
+    for(int StackSlotIndex = MFI->getObjectIndexBegin(),
+             ObjectIndexEnd = MFI->getObjectIndexEnd();
+         StackSlotIndex < ObjectIndexEnd; StackSlotIndex++) {
+
+      MachineLiveValPtr MachineLiveValue;
+      MachineLiveStackSlot MachineLiveStackSlotValue(0);
+
+      if(UsedSS.count(StackSlotIndex) && !MFI->isDeadObjectIndex(StackSlotIndex) &&
+         isSSLiveAcrossInstr(StackSlotIndex, MICall) && CurSS.find(StackSlotIndex) == CurSS.end()) {
+
+        StackCopyLoc *StackSlotCopyLocation;
+        CopyLocVecPtr CopyLocationVector;
+        CopyLocVec::const_iterator CopyLocation, CopyLocationEnd;
+        StackSlotCopies::const_iterator StackSlotCopiesMap;
+        if ((StackSlotCopiesMap = SSCopies.find(StackSlotIndex)) != SSCopies.end()) {
+
+          CopyLocationVector = StackSlotCopiesMap->second;
+          for (CopyLocation = CopyLocationVector->begin(),
+              CopyLocationEnd = CopyLocationVector->end();
+               CopyLocation != CopyLocationEnd; CopyLocation++) {
+
+            CopyLocPtr CopyLocationPointer = *CopyLocation;
+            switch(CopyLocationPointer->getType()) {
+
+            case CopyLoc::STACK_STORE: {
+
+              StackSlotCopyLocation = (StackCopyLoc *)CopyLocationPointer.get();
+
+              const MachineInstr *DefinitionMI;
+              unsigned ChainVreg = StackSlotCopyLocation->Vreg;
+              SmallPtrSet<const MachineInstr *, 4> SeenDefs, NewDefs;
+
+              do {
+                getUnseenDefinitions(MRI->def_instr_begin(ChainVreg),
+                                     SeenDefs, NewDefs);
+                if (NewDefs.size() == 0) {
+                  LLVM_DEBUG(dbgs() << "WARNING: no unseen definition\n");
+                  break;
+                }
+                if (NewDefs.size() == 1) {
+                  DefinitionMI = *NewDefs.begin();
+                }
+                else {
+                  LLVM_DEBUG(dbgs() << "WARNING: Unhandled multiple definitions case in arch-specific slot.\n");
+                  break;
+                }
+
+                SeenDefs.insert(DefinitionMI);
+                sanitizeVregs(MachineLiveValue, MISM);
+                MachineLiveValue = TVG->getMachineValue(DefinitionMI);
+
+                if(MachineLiveValue)
+                  break; // We got a value!
+
+                LLVM_DEBUG(dbgs() << "WARNING: Could not find a value for unhandled stack slot.\n");
+                break;
+
+              } while (TargetRegisterInfo::isVirtualRegister(ChainVreg));
+
+              if(MachineLiveValue) {
+                LLVM_DEBUG(dbgs() << "      Defining instruction: ";
+                               MachineLiveValue->getDefiningInst()->print(dbgs());
+                               dbgs() << "      Value: " << MachineLiveValue->toString() << "\n");
+                MachineLiveStackSlotValue.setStackSlot(StackSlotIndex);
+                MF->addSMArchSpecificLocation(IRSM, MachineLiveStackSlotValue, *MachineLiveValue);
+                CurSS.emplace(StackSlotIndex, ValueVecPtr(nullptr));
+              }
+
+              break;
+            }
+            default:
+              LLVM_DEBUG(dbgs() << "Unknown/invalid location type\n");
+              break;
+            }
+          }
+        }
       }
     }
 
