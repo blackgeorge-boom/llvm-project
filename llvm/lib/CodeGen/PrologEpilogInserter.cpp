@@ -212,6 +212,10 @@ static void stashEntryDbgValues(MachineBasicBlock &MBB,
 /// runOnMachineFunction - Insert prolog/epilog code and replace abstract
 /// frame indexes with appropriate references.
 bool PEI::runOnMachineFunction(MachineFunction &MF) {
+
+  LLVM_DEBUG(dbgs() << "********** PROLOG EPILOG INSERTER **********\n"
+                    << "********** Function: " << MF.getName() << '\n');
+
   NumFuncSeen++;
   const Function &F = MF.getFunction();
   const TargetRegisterInfo *TRI = MF.getSubtarget().getRegisterInfo();
