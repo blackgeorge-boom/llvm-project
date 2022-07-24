@@ -913,6 +913,11 @@ void AArch64FrameLowering::emitPrologue(MachineFunction &MF,
   if (CombineSPBump) {
     emitFrameOffset(MBB, MBBI, DL, AArch64::SP, AArch64::SP, -NumBytes, TII,
                     MachineInstr::FrameSetup, false, NeedsWinCFI, &HasWinCFI);
+    // This hack is to correct the prolog setup, in the case of emitting
+    // an emergency spill slot.
+    // TODO: Need to understand better how to fix this.
+    if (ForceSpillScavengingSlot && AFI->getCalleeSavedStackSize() % 16 == 8)
+      AFI->setLocalStackSize(NumBytes - PrologueSaveSize + 8);
     NumBytes = 0;
   } else if (PrologueSaveSize != 0) {
     MBBI = convertCalleeSaveRestoreToSPPrePostIncDec(
