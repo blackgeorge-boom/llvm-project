@@ -2075,6 +2075,9 @@ bool AArch64FrameLowering::restoreCalleeSavedRegisters(
 void AArch64FrameLowering::determineCalleeSaves(MachineFunction &MF,
                                                 BitVector &SavedRegs,
                                                 RegScavenger *RS) const {
+
+  LLVM_DEBUG(dbgs() << "********** Function: " << MF.getName() << '\n');
+
   // All calls are tail calls in GHC calling conv, and functions have no
   // prologue/epilogue.
   if (MF.getFunction().getCallingConv() == CallingConv::GHC)
