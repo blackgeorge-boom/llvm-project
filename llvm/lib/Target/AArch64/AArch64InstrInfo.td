@@ -150,6 +150,8 @@ def AArch64LocalRecover : SDNode<"ISD::LOCAL_RECOVER",
 def TempRegsADRP        : Predicate<"Subtarget->hasTempRegsADRP()">;
 def NotTempRegsADRP     : Predicate<"!Subtarget->hasTempRegsADRP()">;
 
+def hasUMADDL           : Predicate<"!Subtarget->avoidUMADDL()">;
+
 //===----------------------------------------------------------------------===//
 // AArch64-specific DAG Nodes.
 //
@@ -1115,8 +1117,11 @@ def UMSUBLrrr : WideMulAccum<1, 0b101, "umsubl", sub, zext>;
 
 def : Pat<(i64 (mul (sext GPR32:$Rn), (sext GPR32:$Rm))),
           (SMADDLrrr GPR32:$Rn, GPR32:$Rm, XZR)>;
+
+let Predicates = [hasUMADDL] in {
 def : Pat<(i64 (mul (zext GPR32:$Rn), (zext GPR32:$Rm))),
           (UMADDLrrr GPR32:$Rn, GPR32:$Rm, XZR)>;
+} // Predicates = [hasUMADDL]
 
 def : Pat<(i64 (ineg (mul (sext GPR32:$Rn), (sext GPR32:$Rm)))),
           (SMSUBLrrr GPR32:$Rn, GPR32:$Rm, XZR)>;

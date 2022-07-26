@@ -367,6 +367,14 @@ def FeatureTempRegsADRP : SubtargetFeature<"temp-regs-adrp", "TempRegsADRP",
 def FeatureAvoidF128 : SubtargetFeature<"avoid-f128", "AvoidF128",
     "true", "Avoid the use of f128 memory operand types.">;
 
+// Avoid instructions like:
+//      umull	x17, w17, w20
+// where the source operands are 32-bit and the destination is 64-bit.
+// X86 does not support this, using only 64-bit operands for a 64-bit destination.
+// This leads to differences in register allocation.
+def FeatureAvoidUMADDL : SubtargetFeature<"avoid-wide-mul-add", "AvoidUMADDL",
+    "true", "Disable the use of wide multiplication-addition of 32-bit to 64-bit.">;
+
 //===----------------------------------------------------------------------===//
 // Architectures.
 //
