@@ -1243,26 +1243,41 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
       ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr =
           MemoryBuffer::getFileOrSTDIN(Filename);
-      if (std::error_code EC = FileOrErr.getError()) {
-        auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
-                                "Could not open input file: " + EC.message());
-      }
 
-      Expected<llvm::json::Value> E =
-          llvm::json::parse((FileOrErr.get())->getBuffer());
-      assert(E);
-      Optional<int64_t> Padding;
-      if (llvm::json::Object *O = E->getAsObject())
-        if (llvm::json::Object *Opts = O->getObject("aarch64"))
-          if (Padding = Opts->getInteger(MILabel->getName())) {
-            assert(Opts->get(MILabel->getName())->kind() ==
-                   llvm::json::Value::Number);
+      if (FileOrErr) {
+
+        Expected<llvm::json::Value> JSONOrErr =
+            llvm::json::parse((FileOrErr.get())->getBuffer());
+
+        if (JSONOrErr) {
+          if (llvm::json::Object *O = JSONOrErr->getAsObject()) {
+            if (llvm::json::Object *Opts = O->getObject("aarch64")) {
+              Optional<int64_t> Padding = Opts->getInteger(MILabel->getName());
+              if (Padding) {
+                assert(Opts->get(MILabel->getName())->kind() ==
+                           llvm::json::Value::Number &&
+                       "Padding was not a number!");
+
+                if (Padding.hasValue()) {
+                  assert(Padding.getValue() % 4 == 0);
+                  for (int64_t I = 0; I < Padding.getValue() / 4; I++)
+                    EmitToStreamer(*OutStreamer,
+                                   MCInstBuilder(AArch64::HINT).addImm(0));
+                }
+              }
+            }
           }
-
-      if (Padding.hasValue()) {
-        assert(Padding.getValue() % 4 == 0);
-        for (int64_t I = 0; I < Padding.getValue() / 4; I++)
-          EmitToStreamer(*OutStreamer, MCInstBuilder(AArch64::HINT).addImm(0));
+        } else {
+          errs() << "Could not parse aarch64 JSON file.\n";
+          exit(1);
+        }
+      } else {
+        std::error_code EC = FileOrErr.getError();
+        auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
+                                "Could not open input file " + Filename.str() +
+                                    ": " + EC.message());
+        errs() << Err.getMessage() << "\n";
+        exit(1);
       }
     }
   }
