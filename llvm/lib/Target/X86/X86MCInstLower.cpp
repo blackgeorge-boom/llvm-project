@@ -44,8 +44,8 @@
 #include "llvm/MC/MCSymbolELF.h"
 #include "llvm/Target/TargetLoweringObjectFile.h"
 
-#include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/JSON.h"
+#include "llvm/Support/MemoryBuffer.h"
 #include <system_error>
 
 using namespace llvm;
@@ -470,20 +470,47 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
         X86II::isX86_64ExtendedReg(OutMI.getOperand(1).getReg())) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default: llvm_unreachable("Invalid opcode");
-      case X86::VMOVZPQILo2PQIrr: NewOpc = X86::VMOVPQI2QIrr;   break;
-      case X86::VMOVAPDrr:        NewOpc = X86::VMOVAPDrr_REV;  break;
-      case X86::VMOVAPDYrr:       NewOpc = X86::VMOVAPDYrr_REV; break;
-      case X86::VMOVAPSrr:        NewOpc = X86::VMOVAPSrr_REV;  break;
-      case X86::VMOVAPSYrr:       NewOpc = X86::VMOVAPSYrr_REV; break;
-      case X86::VMOVDQArr:        NewOpc = X86::VMOVDQArr_REV;  break;
-      case X86::VMOVDQAYrr:       NewOpc = X86::VMOVDQAYrr_REV; break;
-      case X86::VMOVDQUrr:        NewOpc = X86::VMOVDQUrr_REV;  break;
-      case X86::VMOVDQUYrr:       NewOpc = X86::VMOVDQUYrr_REV; break;
-      case X86::VMOVUPDrr:        NewOpc = X86::VMOVUPDrr_REV;  break;
-      case X86::VMOVUPDYrr:       NewOpc = X86::VMOVUPDYrr_REV; break;
-      case X86::VMOVUPSrr:        NewOpc = X86::VMOVUPSrr_REV;  break;
-      case X86::VMOVUPSYrr:       NewOpc = X86::VMOVUPSYrr_REV; break;
+      default:
+        llvm_unreachable("Invalid opcode");
+      case X86::VMOVZPQILo2PQIrr:
+        NewOpc = X86::VMOVPQI2QIrr;
+        break;
+      case X86::VMOVAPDrr:
+        NewOpc = X86::VMOVAPDrr_REV;
+        break;
+      case X86::VMOVAPDYrr:
+        NewOpc = X86::VMOVAPDYrr_REV;
+        break;
+      case X86::VMOVAPSrr:
+        NewOpc = X86::VMOVAPSrr_REV;
+        break;
+      case X86::VMOVAPSYrr:
+        NewOpc = X86::VMOVAPSYrr_REV;
+        break;
+      case X86::VMOVDQArr:
+        NewOpc = X86::VMOVDQArr_REV;
+        break;
+      case X86::VMOVDQAYrr:
+        NewOpc = X86::VMOVDQAYrr_REV;
+        break;
+      case X86::VMOVDQUrr:
+        NewOpc = X86::VMOVDQUrr_REV;
+        break;
+      case X86::VMOVDQUYrr:
+        NewOpc = X86::VMOVDQUYrr_REV;
+        break;
+      case X86::VMOVUPDrr:
+        NewOpc = X86::VMOVUPDrr_REV;
+        break;
+      case X86::VMOVUPDYrr:
+        NewOpc = X86::VMOVUPDYrr_REV;
+        break;
+      case X86::VMOVUPSrr:
+        NewOpc = X86::VMOVUPSrr_REV;
+        break;
+      case X86::VMOVUPSYrr:
+        NewOpc = X86::VMOVUPSYrr_REV;
+        break;
       }
       OutMI.setOpcode(NewOpc);
     }
@@ -495,9 +522,14 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
         X86II::isX86_64ExtendedReg(OutMI.getOperand(2).getReg())) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default: llvm_unreachable("Invalid opcode");
-      case X86::VMOVSDrr: NewOpc = X86::VMOVSDrr_REV; break;
-      case X86::VMOVSSrr: NewOpc = X86::VMOVSSrr_REV; break;
+      default:
+        llvm_unreachable("Invalid opcode");
+      case X86::VMOVSDrr:
+        NewOpc = X86::VMOVSDrr_REV;
+        break;
+      case X86::VMOVSSrr:
+        NewOpc = X86::VMOVSSrr_REV;
+        break;
       }
       OutMI.setOpcode(NewOpc);
     }
@@ -582,11 +614,20 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
     if (!AsmPrinter.getSubtarget().is64Bit()) {
       unsigned Opcode;
       switch (OutMI.getOpcode()) {
-      default: llvm_unreachable("Invalid opcode");
-      case X86::DEC16r: Opcode = X86::DEC16r_alt; break;
-      case X86::DEC32r: Opcode = X86::DEC32r_alt; break;
-      case X86::INC16r: Opcode = X86::INC16r_alt; break;
-      case X86::INC32r: Opcode = X86::INC32r_alt; break;
+      default:
+        llvm_unreachable("Invalid opcode");
+      case X86::DEC16r:
+        Opcode = X86::DEC16r_alt;
+        break;
+      case X86::DEC32r:
+        Opcode = X86::DEC32r_alt;
+        break;
+      case X86::INC16r:
+        Opcode = X86::INC16r_alt;
+        break;
+      case X86::INC32r:
+        Opcode = X86::INC32r_alt;
+        break;
       }
       OutMI.setOpcode(Opcode);
     }
@@ -609,68 +650,181 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
   case X86::MOV32rm: {
     unsigned NewOpc;
     switch (OutMI.getOpcode()) {
-    default: llvm_unreachable("Invalid opcode");
+    default:
+      llvm_unreachable("Invalid opcode");
     case X86::MOV8mr_NOREX:
-    case X86::MOV8mr:  NewOpc = X86::MOV8o32a; break;
+    case X86::MOV8mr:
+      NewOpc = X86::MOV8o32a;
+      break;
     case X86::MOV8rm_NOREX:
-    case X86::MOV8rm:  NewOpc = X86::MOV8ao32; break;
-    case X86::MOV16mr: NewOpc = X86::MOV16o32a; break;
-    case X86::MOV16rm: NewOpc = X86::MOV16ao32; break;
-    case X86::MOV32mr: NewOpc = X86::MOV32o32a; break;
-    case X86::MOV32rm: NewOpc = X86::MOV32ao32; break;
+    case X86::MOV8rm:
+      NewOpc = X86::MOV8ao32;
+      break;
+    case X86::MOV16mr:
+      NewOpc = X86::MOV16o32a;
+      break;
+    case X86::MOV16rm:
+      NewOpc = X86::MOV16ao32;
+      break;
+    case X86::MOV32mr:
+      NewOpc = X86::MOV32o32a;
+      break;
+    case X86::MOV32rm:
+      NewOpc = X86::MOV32ao32;
+      break;
     }
     SimplifyShortMoveForm(AsmPrinter, OutMI, NewOpc);
     break;
   }
 
-  case X86::ADC8ri: case X86::ADC16ri: case X86::ADC32ri: case X86::ADC64ri32:
-  case X86::ADD8ri: case X86::ADD16ri: case X86::ADD32ri: case X86::ADD64ri32:
-  case X86::AND8ri: case X86::AND16ri: case X86::AND32ri: case X86::AND64ri32:
-  case X86::CMP8ri: case X86::CMP16ri: case X86::CMP32ri: case X86::CMP64ri32:
-  case X86::OR8ri:  case X86::OR16ri:  case X86::OR32ri:  case X86::OR64ri32:
-  case X86::SBB8ri: case X86::SBB16ri: case X86::SBB32ri: case X86::SBB64ri32:
-  case X86::SUB8ri: case X86::SUB16ri: case X86::SUB32ri: case X86::SUB64ri32:
-  case X86::TEST8ri:case X86::TEST16ri:case X86::TEST32ri:case X86::TEST64ri32:
-  case X86::XOR8ri: case X86::XOR16ri: case X86::XOR32ri: case X86::XOR64ri32: {
+  case X86::ADC8ri:
+  case X86::ADC16ri:
+  case X86::ADC32ri:
+  case X86::ADC64ri32:
+  case X86::ADD8ri:
+  case X86::ADD16ri:
+  case X86::ADD32ri:
+  case X86::ADD64ri32:
+  case X86::AND8ri:
+  case X86::AND16ri:
+  case X86::AND32ri:
+  case X86::AND64ri32:
+  case X86::CMP8ri:
+  case X86::CMP16ri:
+  case X86::CMP32ri:
+  case X86::CMP64ri32:
+  case X86::OR8ri:
+  case X86::OR16ri:
+  case X86::OR32ri:
+  case X86::OR64ri32:
+  case X86::SBB8ri:
+  case X86::SBB16ri:
+  case X86::SBB32ri:
+  case X86::SBB64ri32:
+  case X86::SUB8ri:
+  case X86::SUB16ri:
+  case X86::SUB32ri:
+  case X86::SUB64ri32:
+  case X86::TEST8ri:
+  case X86::TEST16ri:
+  case X86::TEST32ri:
+  case X86::TEST64ri32:
+  case X86::XOR8ri:
+  case X86::XOR16ri:
+  case X86::XOR32ri:
+  case X86::XOR64ri32: {
     unsigned NewOpc;
     switch (OutMI.getOpcode()) {
-    default: llvm_unreachable("Invalid opcode");
-    case X86::ADC8ri:     NewOpc = X86::ADC8i8;    break;
-    case X86::ADC16ri:    NewOpc = X86::ADC16i16;  break;
-    case X86::ADC32ri:    NewOpc = X86::ADC32i32;  break;
-    case X86::ADC64ri32:  NewOpc = X86::ADC64i32;  break;
-    case X86::ADD8ri:     NewOpc = X86::ADD8i8;    break;
-    case X86::ADD16ri:    NewOpc = X86::ADD16i16;  break;
-    case X86::ADD32ri:    NewOpc = X86::ADD32i32;  break;
-    case X86::ADD64ri32:  NewOpc = X86::ADD64i32;  break;
-    case X86::AND8ri:     NewOpc = X86::AND8i8;    break;
-    case X86::AND16ri:    NewOpc = X86::AND16i16;  break;
-    case X86::AND32ri:    NewOpc = X86::AND32i32;  break;
-    case X86::AND64ri32:  NewOpc = X86::AND64i32;  break;
-    case X86::CMP8ri:     NewOpc = X86::CMP8i8;    break;
-    case X86::CMP16ri:    NewOpc = X86::CMP16i16;  break;
-    case X86::CMP32ri:    NewOpc = X86::CMP32i32;  break;
-    case X86::CMP64ri32:  NewOpc = X86::CMP64i32;  break;
-    case X86::OR8ri:      NewOpc = X86::OR8i8;     break;
-    case X86::OR16ri:     NewOpc = X86::OR16i16;   break;
-    case X86::OR32ri:     NewOpc = X86::OR32i32;   break;
-    case X86::OR64ri32:   NewOpc = X86::OR64i32;   break;
-    case X86::SBB8ri:     NewOpc = X86::SBB8i8;    break;
-    case X86::SBB16ri:    NewOpc = X86::SBB16i16;  break;
-    case X86::SBB32ri:    NewOpc = X86::SBB32i32;  break;
-    case X86::SBB64ri32:  NewOpc = X86::SBB64i32;  break;
-    case X86::SUB8ri:     NewOpc = X86::SUB8i8;    break;
-    case X86::SUB16ri:    NewOpc = X86::SUB16i16;  break;
-    case X86::SUB32ri:    NewOpc = X86::SUB32i32;  break;
-    case X86::SUB64ri32:  NewOpc = X86::SUB64i32;  break;
-    case X86::TEST8ri:    NewOpc = X86::TEST8i8;   break;
-    case X86::TEST16ri:   NewOpc = X86::TEST16i16; break;
-    case X86::TEST32ri:   NewOpc = X86::TEST32i32; break;
-    case X86::TEST64ri32: NewOpc = X86::TEST64i32; break;
-    case X86::XOR8ri:     NewOpc = X86::XOR8i8;    break;
-    case X86::XOR16ri:    NewOpc = X86::XOR16i16;  break;
-    case X86::XOR32ri:    NewOpc = X86::XOR32i32;  break;
-    case X86::XOR64ri32:  NewOpc = X86::XOR64i32;  break;
+    default:
+      llvm_unreachable("Invalid opcode");
+    case X86::ADC8ri:
+      NewOpc = X86::ADC8i8;
+      break;
+    case X86::ADC16ri:
+      NewOpc = X86::ADC16i16;
+      break;
+    case X86::ADC32ri:
+      NewOpc = X86::ADC32i32;
+      break;
+    case X86::ADC64ri32:
+      NewOpc = X86::ADC64i32;
+      break;
+    case X86::ADD8ri:
+      NewOpc = X86::ADD8i8;
+      break;
+    case X86::ADD16ri:
+      NewOpc = X86::ADD16i16;
+      break;
+    case X86::ADD32ri:
+      NewOpc = X86::ADD32i32;
+      break;
+    case X86::ADD64ri32:
+      NewOpc = X86::ADD64i32;
+      break;
+    case X86::AND8ri:
+      NewOpc = X86::AND8i8;
+      break;
+    case X86::AND16ri:
+      NewOpc = X86::AND16i16;
+      break;
+    case X86::AND32ri:
+      NewOpc = X86::AND32i32;
+      break;
+    case X86::AND64ri32:
+      NewOpc = X86::AND64i32;
+      break;
+    case X86::CMP8ri:
+      NewOpc = X86::CMP8i8;
+      break;
+    case X86::CMP16ri:
+      NewOpc = X86::CMP16i16;
+      break;
+    case X86::CMP32ri:
+      NewOpc = X86::CMP32i32;
+      break;
+    case X86::CMP64ri32:
+      NewOpc = X86::CMP64i32;
+      break;
+    case X86::OR8ri:
+      NewOpc = X86::OR8i8;
+      break;
+    case X86::OR16ri:
+      NewOpc = X86::OR16i16;
+      break;
+    case X86::OR32ri:
+      NewOpc = X86::OR32i32;
+      break;
+    case X86::OR64ri32:
+      NewOpc = X86::OR64i32;
+      break;
+    case X86::SBB8ri:
+      NewOpc = X86::SBB8i8;
+      break;
+    case X86::SBB16ri:
+      NewOpc = X86::SBB16i16;
+      break;
+    case X86::SBB32ri:
+      NewOpc = X86::SBB32i32;
+      break;
+    case X86::SBB64ri32:
+      NewOpc = X86::SBB64i32;
+      break;
+    case X86::SUB8ri:
+      NewOpc = X86::SUB8i8;
+      break;
+    case X86::SUB16ri:
+      NewOpc = X86::SUB16i16;
+      break;
+    case X86::SUB32ri:
+      NewOpc = X86::SUB32i32;
+      break;
+    case X86::SUB64ri32:
+      NewOpc = X86::SUB64i32;
+      break;
+    case X86::TEST8ri:
+      NewOpc = X86::TEST8i8;
+      break;
+    case X86::TEST16ri:
+      NewOpc = X86::TEST16i16;
+      break;
+    case X86::TEST32ri:
+      NewOpc = X86::TEST32i32;
+      break;
+    case X86::TEST64ri32:
+      NewOpc = X86::TEST64i32;
+      break;
+    case X86::XOR8ri:
+      NewOpc = X86::XOR8i8;
+      break;
+    case X86::XOR16ri:
+      NewOpc = X86::XOR16i16;
+      break;
+    case X86::XOR32ri:
+      NewOpc = X86::XOR32i32;
+      break;
+    case X86::XOR64ri32:
+      NewOpc = X86::XOR64i32;
+      break;
     }
     SimplifyShortImmForm(OutMI, NewOpc);
     break;
@@ -867,7 +1021,8 @@ static unsigned EmitNop(MCStreamer &OS, unsigned NumBytes, bool Is64Bit,
     OS.EmitBytes("\x66");
 
   switch (Opc) {
-  default: llvm_unreachable("Unexpected opcode");
+  default:
+    llvm_unreachable("Unexpected opcode");
   case X86::NOOP:
     OS.EmitInstruction(MCInstBuilder(Opc), STI);
     break;
@@ -1700,18 +1855,19 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
   case X86::TLS_base_addr64:
     return LowerTlsAddr(MCInstLowering, *MI);
 
-  // Loading/storing mask pairs requires two kmov operations. The second one of these
-  // needs a 2 byte displacement relative to the specified address (with 32 bit spill
-  // size). The pairs of 1bit masks up to 16 bit masks all use the same spill size,
-  // they all are stored using MASKPAIR16STORE, loaded using MASKPAIR16LOAD.
+  // Loading/storing mask pairs requires two kmov operations. The second one of
+  // these needs a 2 byte displacement relative to the specified address (with
+  // 32 bit spill size). The pairs of 1bit masks up to 16 bit masks all use the
+  // same spill size, they all are stored using MASKPAIR16STORE, loaded using
+  // MASKPAIR16LOAD.
   //
-  // The displacement value might wrap around in theory, thus the asserts in both
-  // cases.
+  // The displacement value might wrap around in theory, thus the asserts in
+  // both cases.
   case X86::MASKPAIR16LOAD: {
     int64_t Disp = MI->getOperand(1 + X86::AddrDisp).getImm();
     assert(Disp >= 0 && Disp <= INT32_MAX - 2 && "Unexpected displacement");
     const X86RegisterInfo *RI =
-      MF->getSubtarget<X86Subtarget>().getRegisterInfo();
+        MF->getSubtarget<X86Subtarget>().getRegisterInfo();
     unsigned Reg = MI->getOperand(0).getReg();
     unsigned Reg0 = RI->getSubReg(Reg, X86::sub_mask_0);
     unsigned Reg1 = RI->getSubReg(Reg, X86::sub_mask_1);
@@ -1744,7 +1900,7 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     int64_t Disp = MI->getOperand(X86::AddrDisp).getImm();
     assert(Disp >= 0 && Disp <= INT32_MAX - 2 && "Unexpected displacement");
     const X86RegisterInfo *RI =
-      MF->getSubtarget<X86Subtarget>().getRegisterInfo();
+        MF->getSubtarget<X86Subtarget>().getRegisterInfo();
     unsigned Reg = MI->getOperand(X86::AddrNumOperands).getReg();
     unsigned Reg0 = RI->getSubReg(Reg, X86::sub_mask_0);
     unsigned Reg1 = RI->getSubReg(Reg, X86::sub_mask_1);
@@ -1752,7 +1908,8 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     // Store the first mask register
     MCInstBuilder MIB = MCInstBuilder(X86::KMOVWmk);
     for (int i = 0; i < X86::AddrNumOperands; ++i)
-      MIB.addOperand(MCInstLowering.LowerMachineOperand(MI, MI->getOperand(i)).getValue());
+      MIB.addOperand(
+          MCInstLowering.LowerMachineOperand(MI, MI->getOperand(i)).getValue());
     MIB.addReg(Reg0);
     EmitAndCountInstruction(MIB);
 
@@ -1940,22 +2097,29 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
       break;
     unsigned SrcIdx, MaskIdx;
     switch (MI->getOpcode()) {
-    default: llvm_unreachable("Invalid opcode");
+    default:
+      llvm_unreachable("Invalid opcode");
     case X86::PSHUFBrm:
     case X86::VPSHUFBrm:
     case X86::VPSHUFBYrm:
     case X86::VPSHUFBZ128rm:
     case X86::VPSHUFBZ256rm:
     case X86::VPSHUFBZrm:
-      SrcIdx = 1; MaskIdx = 5; break;
+      SrcIdx = 1;
+      MaskIdx = 5;
+      break;
     case X86::VPSHUFBZ128rmkz:
     case X86::VPSHUFBZ256rmkz:
     case X86::VPSHUFBZrmkz:
-      SrcIdx = 2; MaskIdx = 6; break;
+      SrcIdx = 2;
+      MaskIdx = 6;
+      break;
     case X86::VPSHUFBZ128rmk:
     case X86::VPSHUFBZ256rmk:
     case X86::VPSHUFBZrmk:
-      SrcIdx = 3; MaskIdx = 7; break;
+      SrcIdx = 3;
+      MaskIdx = 7;
+      break;
     }
 
     assert(MI->getNumOperands() >= 6 &&
@@ -1999,35 +2163,54 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     unsigned SrcIdx, MaskIdx;
     unsigned ElSize;
     switch (MI->getOpcode()) {
-    default: llvm_unreachable("Invalid opcode");
+    default:
+      llvm_unreachable("Invalid opcode");
     case X86::VPERMILPSrm:
     case X86::VPERMILPSYrm:
     case X86::VPERMILPSZ128rm:
     case X86::VPERMILPSZ256rm:
     case X86::VPERMILPSZrm:
-      SrcIdx = 1; MaskIdx = 5; ElSize = 32; break;
+      SrcIdx = 1;
+      MaskIdx = 5;
+      ElSize = 32;
+      break;
     case X86::VPERMILPSZ128rmkz:
     case X86::VPERMILPSZ256rmkz:
     case X86::VPERMILPSZrmkz:
-      SrcIdx = 2; MaskIdx = 6; ElSize = 32; break;
+      SrcIdx = 2;
+      MaskIdx = 6;
+      ElSize = 32;
+      break;
     case X86::VPERMILPSZ128rmk:
     case X86::VPERMILPSZ256rmk:
     case X86::VPERMILPSZrmk:
-      SrcIdx = 3; MaskIdx = 7; ElSize = 32; break;
+      SrcIdx = 3;
+      MaskIdx = 7;
+      ElSize = 32;
+      break;
     case X86::VPERMILPDrm:
     case X86::VPERMILPDYrm:
     case X86::VPERMILPDZ128rm:
     case X86::VPERMILPDZ256rm:
     case X86::VPERMILPDZrm:
-      SrcIdx = 1; MaskIdx = 5; ElSize = 64; break;
+      SrcIdx = 1;
+      MaskIdx = 5;
+      ElSize = 64;
+      break;
     case X86::VPERMILPDZ128rmkz:
     case X86::VPERMILPDZ256rmkz:
     case X86::VPERMILPDZrmkz:
-      SrcIdx = 2; MaskIdx = 6; ElSize = 64; break;
+      SrcIdx = 2;
+      MaskIdx = 6;
+      ElSize = 64;
+      break;
     case X86::VPERMILPDZ128rmk:
     case X86::VPERMILPDZ256rmk:
     case X86::VPERMILPDZrmk:
-      SrcIdx = 3; MaskIdx = 7; ElSize = 64; break;
+      SrcIdx = 3;
+      MaskIdx = 7;
+      ElSize = 64;
+      break;
     }
 
     assert(MI->getNumOperands() >= 6 &&
@@ -2059,9 +2242,16 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
     unsigned ElSize;
     switch (MI->getOpcode()) {
-    default: llvm_unreachable("Invalid opcode");
-    case X86::VPERMIL2PSrm: case X86::VPERMIL2PSYrm: ElSize = 32; break;
-    case X86::VPERMIL2PDrm: case X86::VPERMIL2PDYrm: ElSize = 64; break;
+    default:
+      llvm_unreachable("Invalid opcode");
+    case X86::VPERMIL2PSrm:
+    case X86::VPERMIL2PSYrm:
+      ElSize = 32;
+      break;
+    case X86::VPERMIL2PDrm:
+    case X86::VPERMIL2PDYrm:
+      ElSize = 64;
+      break;
     }
 
     const MachineOperand &MaskOp = MI->getOperand(6);
@@ -2163,20 +2353,48 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
       int NumLanes = 1;
       // Override NumLanes for the broadcast instructions.
       switch (MI->getOpcode()) {
-      case X86::VBROADCASTF128:        NumLanes = 2; break;
-      case X86::VBROADCASTI128:        NumLanes = 2; break;
-      case X86::VBROADCASTF32X4Z256rm: NumLanes = 2; break;
-      case X86::VBROADCASTF32X4rm:     NumLanes = 4; break;
-      case X86::VBROADCASTF32X8rm:     NumLanes = 2; break;
-      case X86::VBROADCASTF64X2Z128rm: NumLanes = 2; break;
-      case X86::VBROADCASTF64X2rm:     NumLanes = 4; break;
-      case X86::VBROADCASTF64X4rm:     NumLanes = 2; break;
-      case X86::VBROADCASTI32X4Z256rm: NumLanes = 2; break;
-      case X86::VBROADCASTI32X4rm:     NumLanes = 4; break;
-      case X86::VBROADCASTI32X8rm:     NumLanes = 2; break;
-      case X86::VBROADCASTI64X2Z128rm: NumLanes = 2; break;
-      case X86::VBROADCASTI64X2rm:     NumLanes = 4; break;
-      case X86::VBROADCASTI64X4rm:     NumLanes = 2; break;
+      case X86::VBROADCASTF128:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTI128:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTF32X4Z256rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTF32X4rm:
+        NumLanes = 4;
+        break;
+      case X86::VBROADCASTF32X8rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTF64X2Z128rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTF64X2rm:
+        NumLanes = 4;
+        break;
+      case X86::VBROADCASTF64X4rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTI32X4Z256rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTI32X4rm:
+        NumLanes = 4;
+        break;
+      case X86::VBROADCASTI32X8rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTI64X2Z128rm:
+        NumLanes = 2;
+        break;
+      case X86::VBROADCASTI64X2rm:
+        NumLanes = 4;
+        break;
+      case X86::VBROADCASTI64X4rm:
+        NumLanes = 2;
+        break;
       }
 
       std::string Comment;
@@ -2255,38 +2473,101 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     if (auto *C = getConstantFromPool(*MI, MI->getOperand(4))) {
       int NumElts;
       switch (MI->getOpcode()) {
-      default: llvm_unreachable("Invalid opcode");
-      case X86::MOVDDUPrm:         NumElts = 2;  break;
-      case X86::VMOVDDUPrm:        NumElts = 2;  break;
-      case X86::VMOVDDUPZ128rm:    NumElts = 2;  break;
-      case X86::VBROADCASTSSrm:    NumElts = 4;  break;
-      case X86::VBROADCASTSSYrm:   NumElts = 8;  break;
-      case X86::VBROADCASTSSZ128m: NumElts = 4;  break;
-      case X86::VBROADCASTSSZ256m: NumElts = 8;  break;
-      case X86::VBROADCASTSSZm:    NumElts = 16; break;
-      case X86::VBROADCASTSDYrm:   NumElts = 4;  break;
-      case X86::VBROADCASTSDZ256m: NumElts = 4;  break;
-      case X86::VBROADCASTSDZm:    NumElts = 8;  break;
-      case X86::VPBROADCASTBrm:    NumElts = 16; break;
-      case X86::VPBROADCASTBYrm:   NumElts = 32; break;
-      case X86::VPBROADCASTBZ128m: NumElts = 16; break;
-      case X86::VPBROADCASTBZ256m: NumElts = 32; break;
-      case X86::VPBROADCASTBZm:    NumElts = 64; break;
-      case X86::VPBROADCASTDrm:    NumElts = 4;  break;
-      case X86::VPBROADCASTDYrm:   NumElts = 8;  break;
-      case X86::VPBROADCASTDZ128m: NumElts = 4;  break;
-      case X86::VPBROADCASTDZ256m: NumElts = 8;  break;
-      case X86::VPBROADCASTDZm:    NumElts = 16; break;
-      case X86::VPBROADCASTQrm:    NumElts = 2;  break;
-      case X86::VPBROADCASTQYrm:   NumElts = 4;  break;
-      case X86::VPBROADCASTQZ128m: NumElts = 2;  break;
-      case X86::VPBROADCASTQZ256m: NumElts = 4;  break;
-      case X86::VPBROADCASTQZm:    NumElts = 8;  break;
-      case X86::VPBROADCASTWrm:    NumElts = 8;  break;
-      case X86::VPBROADCASTWYrm:   NumElts = 16; break;
-      case X86::VPBROADCASTWZ128m: NumElts = 8;  break;
-      case X86::VPBROADCASTWZ256m: NumElts = 16; break;
-      case X86::VPBROADCASTWZm:    NumElts = 32; break;
+      default:
+        llvm_unreachable("Invalid opcode");
+      case X86::MOVDDUPrm:
+        NumElts = 2;
+        break;
+      case X86::VMOVDDUPrm:
+        NumElts = 2;
+        break;
+      case X86::VMOVDDUPZ128rm:
+        NumElts = 2;
+        break;
+      case X86::VBROADCASTSSrm:
+        NumElts = 4;
+        break;
+      case X86::VBROADCASTSSYrm:
+        NumElts = 8;
+        break;
+      case X86::VBROADCASTSSZ128m:
+        NumElts = 4;
+        break;
+      case X86::VBROADCASTSSZ256m:
+        NumElts = 8;
+        break;
+      case X86::VBROADCASTSSZm:
+        NumElts = 16;
+        break;
+      case X86::VBROADCASTSDYrm:
+        NumElts = 4;
+        break;
+      case X86::VBROADCASTSDZ256m:
+        NumElts = 4;
+        break;
+      case X86::VBROADCASTSDZm:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTBrm:
+        NumElts = 16;
+        break;
+      case X86::VPBROADCASTBYrm:
+        NumElts = 32;
+        break;
+      case X86::VPBROADCASTBZ128m:
+        NumElts = 16;
+        break;
+      case X86::VPBROADCASTBZ256m:
+        NumElts = 32;
+        break;
+      case X86::VPBROADCASTBZm:
+        NumElts = 64;
+        break;
+      case X86::VPBROADCASTDrm:
+        NumElts = 4;
+        break;
+      case X86::VPBROADCASTDYrm:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTDZ128m:
+        NumElts = 4;
+        break;
+      case X86::VPBROADCASTDZ256m:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTDZm:
+        NumElts = 16;
+        break;
+      case X86::VPBROADCASTQrm:
+        NumElts = 2;
+        break;
+      case X86::VPBROADCASTQYrm:
+        NumElts = 4;
+        break;
+      case X86::VPBROADCASTQZ128m:
+        NumElts = 2;
+        break;
+      case X86::VPBROADCASTQZ256m:
+        NumElts = 4;
+        break;
+      case X86::VPBROADCASTQZm:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTWrm:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTWYrm:
+        NumElts = 16;
+        break;
+      case X86::VPBROADCASTWZ128m:
+        NumElts = 8;
+        break;
+      case X86::VPBROADCASTWZ256m:
+        NumElts = 16;
+        break;
+      case X86::VPBROADCASTWZm:
+        NumElts = 32;
+        break;
       }
 
       std::string Comment;
@@ -2319,34 +2600,38 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
     SMShadowTracker.emitShadowPadding(*OutStreamer, getSubtargetInfo());
     // Then emit the call
 
-	MCContext &OutContext = OutStreamer->getContext();
-	OutContext.setAllowTemporaryLabels(true);
-	OutContext.setUseNamesOnTempLabels(true);
-	MCSymbol *MILabel = OutContext.createTempSymbol(MF->getName(), true);
+    MCContext &OutContext = OutStreamer->getContext();
+    OutContext.setAllowTemporaryLabels(true);
+    OutContext.setUseNamesOnTempLabels(true);
+    MCSymbol *MILabel = OutContext.createTempSymbol(MF->getName(), true);
 
-	StringRef Filename = TM.Options.MCOptions.CallsitePaddingFilename;
+    StringRef Filename = TM.Options.MCOptions.CallsitePaddingFilename;
 
-	if (!Filename.empty()) {
+    if (!Filename.empty()) {
 
-		ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr = MemoryBuffer::getFileOrSTDIN(Filename);
-		if (std::error_code EC = FileOrErr.getError()) {
-			auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
-					"Could not open input file: " + EC.message());
-		}
+      ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr =
+          MemoryBuffer::getFileOrSTDIN(Filename);
+      if (std::error_code EC = FileOrErr.getError()) {
+        auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
+                                "Could not open input file: " + EC.message());
+      }
 
-		Expected<llvm::json::Value> E = llvm::json::parse((FileOrErr.get())->getBuffer());
-		assert(E);
-		Optional<int64_t> Padding;
-		if (llvm::json::Object* O = E->getAsObject())
-			if (llvm::json::Object* Opts = O->getObject("x86-64"))
-				if (Padding = Opts->getInteger(MILabel->getName())) {
-					assert(Opts->get(MILabel->getName())->kind() == llvm::json::Value::Number);
-				}
+      Expected<llvm::json::Value> E =
+          llvm::json::parse((FileOrErr.get())->getBuffer());
+      assert(E);
+      Optional<int64_t> Padding;
+      if (llvm::json::Object *O = E->getAsObject())
+        if (llvm::json::Object *Opts = O->getObject("x86-64"))
+          if (Padding = Opts->getInteger(MILabel->getName())) {
+            assert(Opts->get(MILabel->getName())->kind() ==
+                   llvm::json::Value::Number);
+          }
 
-		if (Padding.hasValue()) {
-			EmitNops(*OutStreamer, Padding.getValue(), Subtarget->is64Bit(), getSubtargetInfo());
-		}
-	}
+      if (Padding.hasValue()) {
+        EmitNops(*OutStreamer, Padding.getValue(), Subtarget->is64Bit(),
+                 getSubtargetInfo());
+      }
+    }
 
     OutStreamer->EmitInstruction(TmpInst, getSubtargetInfo());
     return;
