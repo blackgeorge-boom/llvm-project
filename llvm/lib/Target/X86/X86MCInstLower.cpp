@@ -2634,7 +2634,7 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
             }
           }
         } else {
-          errs() << "Could not parse x86-64 JSON file.\n";
+          errs() << "Could not parse JSON file: " << Filename.str() << "\n";
           exit(1);
         }
       } else {

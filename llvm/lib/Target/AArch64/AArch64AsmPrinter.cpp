@@ -1268,7 +1268,7 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
             }
           }
         } else {
-          errs() << "Could not parse aarch64 JSON file.\n";
+          errs() << "Could not parse JSON file: " << Filename.str() << "\n";
           exit(1);
         }
       } else {
