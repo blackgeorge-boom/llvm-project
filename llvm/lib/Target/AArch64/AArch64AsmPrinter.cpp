@@ -1267,7 +1267,7 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
                    "Padding was not a number!");
 
             if (Padding.hasValue()) {
-              assert(Padding.getValue() % 4 == 0);
+              assert(Padding.getValue() % 4 == 0 && "aarch64 callsite padding should be a multiple of four!");
               for (int64_t I = 0; I < Padding.getValue() / 4; I++)
                 EmitToStreamer(*OutStreamer,
                                MCInstBuilder(AArch64::HINT).addImm(0));
