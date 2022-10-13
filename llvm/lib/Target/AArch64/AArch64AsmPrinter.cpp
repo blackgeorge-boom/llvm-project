@@ -1243,41 +1243,37 @@ void AArch64AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
       ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr =
           MemoryBuffer::getFileOrSTDIN(Filename);
-
-      if (FileOrErr) {
-
-        Expected<llvm::json::Value> JSONOrErr =
-            llvm::json::parse((FileOrErr.get())->getBuffer());
-
-        if (JSONOrErr) {
-          if (llvm::json::Object *O = JSONOrErr->getAsObject()) {
-            if (llvm::json::Object *Opts = O->getObject("aarch64")) {
-              Optional<int64_t> Padding = Opts->getInteger(MILabel->getName());
-              if (Padding) {
-                assert(Opts->get(MILabel->getName())->kind() ==
-                           llvm::json::Value::Number &&
-                       "Padding was not a number!");
-
-                if (Padding.hasValue()) {
-                  assert(Padding.getValue() % 4 == 0);
-                  for (int64_t I = 0; I < Padding.getValue() / 4; I++)
-                    EmitToStreamer(*OutStreamer,
-                                   MCInstBuilder(AArch64::HINT).addImm(0));
-                }
-              }
-            }
-          }
-        } else {
-          errs() << "Could not parse JSON file: " << Filename.str() << "\n";
-          exit(1);
-        }
-      } else {
-        std::error_code EC = FileOrErr.getError();
+      if (auto EC = FileOrErr.getError()) {
         auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
                                 "Could not open input file " + Filename.str() +
                                     ": " + EC.message());
         errs() << Err.getMessage() << "\n";
         exit(1);
+      }
+
+      Expected<llvm::json::Value> JSONOrErr =
+          llvm::json::parse((FileOrErr.get())->getBuffer());
+      if (auto EC = JSONOrErr.takeError()) {
+        errs() << "Could not parse JSON file: " << Filename.str() << "\n";
+        exit(1);
+      }
+
+      if (llvm::json::Object *O = JSONOrErr->getAsObject()) {
+        if (llvm::json::Object *Opts = O->getObject("aarch64")) {
+          Optional<int64_t> Padding = Opts->getInteger(MILabel->getName());
+          if (Padding) {
+            assert(Opts->get(MILabel->getName())->kind() ==
+                       llvm::json::Value::Number &&
+                   "Padding was not a number!");
+
+            if (Padding.hasValue()) {
+              assert(Padding.getValue() % 4 == 0);
+              for (int64_t I = 0; I < Padding.getValue() / 4; I++)
+                EmitToStreamer(*OutStreamer,
+                               MCInstBuilder(AArch64::HINT).addImm(0));
+            }
+          }
+        }
       }
     }
   }

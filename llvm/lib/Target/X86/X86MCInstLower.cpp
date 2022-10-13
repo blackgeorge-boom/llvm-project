@@ -2611,39 +2611,35 @@ void X86AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
       ErrorOr<std::unique_ptr<MemoryBuffer>> FileOrErr =
           MemoryBuffer::getFileOrSTDIN(Filename);
-
-      if (FileOrErr) {
-
-        Expected<llvm::json::Value> JSONOrErr =
-            llvm::json::parse((FileOrErr.get())->getBuffer());
-
-        if (JSONOrErr) {
-          if (llvm::json::Object *O = JSONOrErr->getAsObject()) {
-            if (llvm::json::Object *Opts = O->getObject("x86-64")) {
-              Optional<int64_t> Padding = Opts->getInteger(MILabel->getName());
-              if (Padding) {
-                assert(Opts->get(MILabel->getName())->kind() ==
-                           llvm::json::Value::Number &&
-                       "Padding was not a number!");
-
-                if (Padding.hasValue()) {
-                  EmitNops(*OutStreamer, Padding.getValue(),
-                           Subtarget->is64Bit(), getSubtargetInfo());
-                }
-              }
-            }
-          }
-        } else {
-          errs() << "Could not parse JSON file: " << Filename.str() << "\n";
-          exit(1);
-        }
-      } else {
-        std::error_code EC = FileOrErr.getError();
+      if (auto EC = FileOrErr.getError()) {
         auto Err = SMDiagnostic(Filename, SourceMgr::DK_Error,
                                 "Could not open input file " + Filename.str() +
                                     ": " + EC.message());
         errs() << Err.getMessage() << "\n";
         exit(1);
+      }
+
+      Expected<llvm::json::Value> JSONOrErr =
+          llvm::json::parse((FileOrErr.get())->getBuffer());
+      if (auto EC = JSONOrErr.takeError()) {
+        errs() << "Could not parse JSON file: " << Filename.str() << "\n";
+        exit(1);
+      }
+
+      if (llvm::json::Object *O = JSONOrErr->getAsObject()) {
+        if (llvm::json::Object *Opts = O->getObject("x86-64")) {
+          Optional<int64_t> Padding = Opts->getInteger(MILabel->getName());
+          if (Padding) {
+            assert(Opts->get(MILabel->getName())->kind() ==
+                       llvm::json::Value::Number &&
+                   "Padding was not a number!");
+
+            if (Padding.hasValue()) {
+              EmitNops(*OutStreamer, Padding.getValue(), Subtarget->is64Bit(),
+                       getSubtargetInfo());
+            }
+          }
+        }
       }
     }
 
