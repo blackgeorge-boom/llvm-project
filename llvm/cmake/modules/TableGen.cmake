@@ -58,6 +58,11 @@ function(tablegen project ofn)
     endif()
   endif()
 
+
+  if (LLVM_UNIFICO_TABLEGEN_FEATURES)
+    list(APPEND ARGN ${LLVM_UNIFICO_TABLEGEN_FEATURES})
+  endif()
+
   # We need both _TABLEGEN_TARGET and _TABLEGEN_EXE in the  DEPENDS list
   # (both the target and the file) to have .inc files rebuilt on
   # a tablegen change, as cmake does not propagate file-level dependencies

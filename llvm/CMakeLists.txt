@@ -302,6 +302,9 @@ set(LLVM_TARGETS_TO_BUILD "all"
 set(LLVM_EXPERIMENTAL_TARGETS_TO_BUILD ""
   CACHE STRING "Semicolon-separated list of experimental targets to build.")
 
+set(LLVM_UNIFICO_TABLEGEN_FEATURES ""
+  CACHE STRING "Semicolon-separated list of Unifico TableGen features to build.")
+
 option(BUILD_SHARED_LIBS
   "Build all libraries as shared libraries instead of static" OFF)
 
