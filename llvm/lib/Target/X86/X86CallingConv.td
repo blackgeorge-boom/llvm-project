@@ -1046,7 +1046,12 @@ def CC_X86 : CallingConv<[
 def CSR_NoRegs : CalleeSavedRegs<(add)>;
 
 def CSR_32 : CalleeSavedRegs<(add ESI, EDI, EBX, EBP)>;
+
+#ifndef UNIFICO_GPR_CALLING_CONV
+def CSR_64 : CalleeSavedRegs<(add RBX, R12, R13, R14, R15, RBP)>;
+#else
 def CSR_64 : CalleeSavedRegs<(add R15, RBX, RBP)>;
+#endif
 
 def CSR_64_SwiftError : CalleeSavedRegs<(sub CSR_64, R12)>;
 
