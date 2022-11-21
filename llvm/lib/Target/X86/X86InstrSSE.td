@@ -255,7 +255,11 @@ defm MOVSS : sse12_move<FR32, X86Movss, v4f32, f32mem, "movss",
 defm MOVSD : sse12_move<FR64, X86Movsd, v2f64, f64mem, "movsd",
                         SSEPackedDouble, "MOVSD", UseSSE2>, XD;
 
+#ifndef UNIFICO_REMAT_RULES
+let canFoldAsLoad = 1, isReMaterializable = 1 in {
+#else
 let canFoldAsLoad = 1, isReMaterializable = 0 in {
+#endif
   defm MOVSS : sse12_move_rm<FR32, v4f32, f32mem, loadf32, X86vzload32, "movss",
                              SSEPackedSingle>, XS;
   defm MOVSD : sse12_move_rm<FR64, v2f64, f64mem, loadf64, X86vzload64, "movsd",

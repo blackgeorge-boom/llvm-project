@@ -351,10 +351,6 @@ def FeatureDisableHoistInLowering : SubtargetFeature<"disable-hoist-in-lowering"
 def FeatureDisableFPImmMaterialize : SubtargetFeature<"disable-fp-imm-materialize", "DisableFPImmMaterialize",
     "true", "Disable materialization of non-zero floating-point immediates.">;
 
-// TODO: Not used currently, but maybe we'll find a way to choose the register class of the instruction based on this.
-def FeatureTempRegsADRP : SubtargetFeature<"temp-regs-adrp", "TempRegsADRP",
-    "true", "Use only temporary registers for ADR/ADRP (not MOVaddr) and treat those as cheap as a move.">;
-
 // This favors code like:
 //   ldrsw	x16, [sp, #0x20]
 //   ldr	x19, [sp, #0x48]

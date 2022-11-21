@@ -31,7 +31,11 @@ def LEA64_32r : I<0x8D, MRMSrcMem,
                   [(set GR32:$dst, lea64_32addr:$src)]>,
                   OpSize32, Requires<[In64BitMode]>;
 
+#ifndef UNIFICO_REMAT_RULES
+let isReMaterializable = 1, isAsCheapAsAMove = 0 in
+#else
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in
+#endif
 def LEA64r   : RI<0x8D, MRMSrcMem, (outs GR64:$dst), (ins lea64mem:$src),
                   "lea{q}\t{$src|$dst}, {$dst|$src}",
                   [(set GR64:$dst, lea64addr:$src)]>;

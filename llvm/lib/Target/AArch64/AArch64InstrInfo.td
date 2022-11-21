@@ -147,9 +147,6 @@ def AArch64LocalRecover : SDNode<"ISD::LOCAL_RECOVER",
                                   SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>,
                                                        SDTCisInt<1>]>>;
 
-def TempRegsADRP        : Predicate<"Subtarget->hasTempRegsADRP()">;
-def NotTempRegsADRP     : Predicate<"!Subtarget->hasTempRegsADRP()">;
-
 def hasUMADDL           : Predicate<"!Subtarget->avoidUMADDL()">;
 
 //===----------------------------------------------------------------------===//
@@ -457,7 +454,11 @@ def ADJCALLSTACKUP : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
                             Sched<[]>;
 } // Defs = [SP], Uses = [SP], hasSideEffects = 1, isCodeGenOnly = 1
 
+#ifndef UNIFICO_REMAT_RULES
+let isReMaterializable = 1, isCodeGenOnly = 1, isAsCheapAsAMove = 0 in {
+#else
 let isReMaterializable = 1, isCodeGenOnly = 1, isAsCheapAsAMove = 1 in {
+#endif
 // FIXME: The following pseudo instructions are only needed because remat
 // cannot handle multiple instructions.  When that changes, they can be
 // removed, along with the AArch64Wrapper node.
@@ -1656,15 +1657,29 @@ def : InstAlias<"cneg $dst, $src, $cc",
 // PC-relative instructions.
 //===----------------------------------------------------------------------===//
 
+#ifndef UNIFICO_REMAT_RULES
+let isReMaterializable = 1, isAsCheapAsAMove = 0 in {
+#else
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in {
+#endif
+
 let hasSideEffects = 0, mayStore = 0, mayLoad = 0 in {
+
 def ADR  : ADRI<0, "adr", adrlabel,
+#ifndef UNIFICO_REMAT_RULES
+                [(set GPR64:$Xd, (AArch64adr tglobaladdr:$label))]>;
+#else
                 [(set GPR64temp:$Xd, (AArch64adr tglobaladdr:$label))]>;
+#endif
 } // hasSideEffects = 0
 
 def ADRP : ADRI<1, "adrp", adrplabel,
+#ifndef UNIFICO_REMAT_RULES
+                [(set GPR64:$Xd, (AArch64adr tglobaladdr:$label))]>;
+#else
                 [(set GPR64temp:$Xd, (AArch64adrp tglobaladdr:$label))]>;
-} // isReMaterializable = 0, isAsCheapAsAMove = 1
+#endif
+} // isReMaterializable = 1, isAsCheapAsAMove = 1
 
 // page address of a constant pool entry, block address
 def : Pat<(AArch64adr tconstpool:$cp), (ADR tconstpool:$cp)>;
