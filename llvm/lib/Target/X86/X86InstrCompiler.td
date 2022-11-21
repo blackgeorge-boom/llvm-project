@@ -265,8 +265,13 @@ def MORESTACK_RET_RESTORE_R10 : I<0, Pseudo, (outs), (ins), "", []>;
 // FIXME: remove when we can teach regalloc that xor reg, reg is ok.
 let Defs = [EFLAGS], isReMaterializable = 1, isAsCheapAsAMove = 1,
     isPseudo = 1, isMoveImm = 1, AddedComplexity = 10 in
+#ifndef UNIFICO_REGALLOC_RULES
+def MOV32r0  : I<0, Pseudo, (outs GR32:$dst), (ins), "",
+                 [(set GR32:$dst, 0)]>, Sched<[WriteZero]>;
+#else
 def MOV32r0  : I<0, Pseudo, (outs GR32temp:$dst), (ins), "",
                  [(set GR32temp:$dst, 0)]>, Sched<[WriteZero]>;
+#endif
 
 // Other widths can also make use of the 32-bit xor, which may have a smaller
 // encoding and avoid partial register updates.
