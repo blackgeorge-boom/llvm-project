@@ -217,6 +217,7 @@ Options:\n\
   --link-shared     Link the components as shared libraries.\n\
   --link-static     Link the component libraries statically.\n\
   --ignore-libllvm  Ignore libLLVM and link component libraries instead.\n\
+  --unifico-flags   Print Unifico TableGen flags.\n\
 Typical components:\n\
   all               All LLVM libraries (default).\n\
   engine            Either a native JIT or a bitcode interpreter.\n";
@@ -567,6 +568,8 @@ int main(int argc, char **argv) {
         LinkMode = LinkModeShared;
       } else if (Arg == "--link-static") {
         LinkMode = LinkModeStatic;
+      } else if (Arg == "--unifico-flags") {
+        OS << LLVM_UNIFICO_FLAGS << '\n';
       } else {
         usage();
       }
