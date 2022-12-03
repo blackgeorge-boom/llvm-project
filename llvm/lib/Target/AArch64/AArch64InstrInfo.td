@@ -1675,7 +1675,7 @@ def ADR  : ADRI<0, "adr", adrlabel,
 
 def ADRP : ADRI<1, "adrp", adrplabel,
 #ifndef UNIFICO_REMAT_RULES
-                [(set GPR64:$Xd, (AArch64adr tglobaladdr:$label))]>;
+                [(set GPR64:$Xd, (AArch64adrp tglobaladdr:$label))]>;
 #else
                 [(set GPR64temp:$Xd, (AArch64adrp tglobaladdr:$label))]>;
 #endif
