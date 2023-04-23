@@ -46,6 +46,7 @@
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Target/TargetLoweringObjectFile.h"
 #include "llvm/Target/TargetOptions.h"
+#include "llvm/Transforms/Scalar.h"
 #include <memory>
 #include <string>
 
@@ -64,6 +65,12 @@ static cl::opt<bool> AlignBytesToFour("align-bytes-to-four",
                                 cl::desc("Sets the preferred alignment of"
                                          "one-byte sized stack objects to four bytes."),
                                 cl::init(false), cl::Hidden);
+
+static cl::opt<bool> EnableSimplifyCFG(
+    "x86-enable-simplify-cfg", cl::Hidden,
+    cl::desc("Run SimplifyCFG after expanding atomic operations"
+             " to match the AArch64 behavior."),
+    cl::init(false));
 
 extern "C" void LLVMInitializeX86Target() {
   // Register the target.
@@ -416,6 +423,10 @@ TargetPassConfig *X86TargetMachine::createPassConfig(PassManagerBase &PM) {
 
 void X86PassConfig::addIRPasses() {
   addPass(createAtomicExpandPass());
+
+  // Use the same flags with the AArch64 invocation
+  if (EnableSimplifyCFG)
+    addPass(createCFGSimplificationPass(1, true, true, false, true));
 
   TargetPassConfig::addIRPasses();
 
