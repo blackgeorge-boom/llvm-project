@@ -875,6 +875,15 @@ public:
     return false;
   }
 
+  /// This method is only called when emitting the COPY instruction from the
+  /// CopyFromReg SDNode. It checks whether the register being copied is the
+  /// zero register, if provided by the architecture, and returns true in that
+  /// case. This way, targets can choose to copy the zero register only to
+  /// specific register classes.
+  virtual bool requiresRegClassOfCopiedReg(unsigned &SrcReg) const {
+    return false;
+  }
+
   /// Return true if target has reserved a spill slot in the stack frame of
   /// the given function for the specified register. e.g. On x86, if the frame
   /// register is required, the first fixed stack object is reserved as its

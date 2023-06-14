@@ -176,6 +176,18 @@ def GPR64sp : RegisterClass<"AArch64", [i64], 64, (add GPR64common, SP)> {
   let AltOrderSelect = [{ return 1; }];
 }
 
+#ifdef UNIFICO_REGALLOC_RULES
+// GPR register class which only includes 32-bit temporary registers and the zero register.
+// This is useful when we want to assign the zero register to only temporary registers,
+// since for X86 we are using MOV32r0 instead, which for now we only assign to temporary registers.
+// This will be achieved through calling `TargetRegisterInfo::getMinimalPhysRegClass`.
+def GPR32temp : RegisterClass<"AArch64", [i32], 32,
+                                (add (sequence "W%u", 0, 8), (sequence "W%u", 16, 18), WZR)> {
+  let AltOrders = [(rotl GPR32temp, 8)];
+  let AltOrderSelect = [{ return 1; }];
+}
+#endif
+
 #ifdef UNIFICO_REMAT_RULES
 def GPR64temp : RegisterClass<"AArch64", [i64], 64,
                                 (add (sequence "X%u", 6, 8), (sequence "X%u", 16, 18))> {

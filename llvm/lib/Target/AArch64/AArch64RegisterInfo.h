@@ -126,6 +126,8 @@ public:
   }
 
   unsigned getLocalAddressRegister(const MachineFunction &MF) const;
+
+  bool requiresRegClassOfCopiedReg(unsigned int &SrcReg) const override;
 };
 
 } // end namespace llvm

@@ -1690,6 +1690,23 @@ void RegisterCoalescer::updateRegDefsUses(unsigned SrcReg,
     if (DstInt && !Reads && SubIdx && !UseMI->isDebugValue())
       Reads = DstInt->liveAt(LIS->getInstructionIndex(*UseMI));
 
+    // Check if you are replacing the uses of a virtual register `%vr`, defined
+    // as `%vr = COPY $wzr`, where $wzr is a zero register, if an architecture
+    // provides it. In this case, we may want to replace the register class of
+    // the destination operand of the copy with the register class of the source
+    // operand (which should be the same as the class of the zero register, from
+    // an earlier use of `requiresRegClassOfCopiedReg` in the InstrEmitter.
+    // TODO: Check if `isCopy()` is enough, or `isCopyLike()` is needed.
+    if (UseMI->isCopy() && TRI->requiresRegClassOfCopiedReg(DstReg)) {
+      MachineOperand &CopyDstMO = UseMI->getOperand(0);
+      MachineOperand &CopySrcMO = UseMI->getOperand(1);
+
+      if (CopyDstMO.isReg() && CopySrcMO.isReg() &&
+          CopyDstMO.getReg().isVirtual() && CopySrcMO.getReg().isVirtual())
+        MRI->setRegClass(CopyDstMO.getReg(),
+                         MRI->getRegClass(CopySrcMO.getReg()));
+    }
+
     // Replace SrcReg with DstReg in all UseMI operands.
     for (unsigned i = 0, e = Ops.size(); i != e; ++i) {
       MachineOperand &MO = UseMI->getOperand(Ops[i]);

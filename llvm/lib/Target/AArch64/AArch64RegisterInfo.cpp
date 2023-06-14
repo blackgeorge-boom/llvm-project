@@ -562,3 +562,7 @@ unsigned AArch64RegisterInfo::getLocalAddressRegister(
     return getBaseRegister();
   return getFrameRegister(MF);
 }
+
+bool AArch64RegisterInfo::requiresRegClassOfCopiedReg(unsigned &SrcReg) const {
+  return SrcReg == AArch64::WZR;
+}
