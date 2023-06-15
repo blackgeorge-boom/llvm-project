@@ -71,7 +71,11 @@ UndefRegClearance("undef-reg-clearance",
                   cl::desc("How many idle instructions we would like before "
                            "certain undef register reads"),
                   cl::init(128), cl::Hidden);
-
+static cl::opt<bool> SmallLEAs(
+    "enable-lea32",
+    cl::desc(
+        "Convert inc/dec 32-bit instructions to lea32 instead of lea64_32r"),
+    cl::Hidden);
 
 // Pin the vtable to this file.
 void X86InstrInfo::anchor() {}
@@ -944,8 +948,10 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
   case X86::INC64r:
   case X86::INC32r: {
     assert(MI.getNumOperands() >= 2 && "Unknown inc instruction!");
-    unsigned Opc = MIOpc == X86::INC64r ? X86::LEA64r :
-        (Is64Bit ? X86::LEA64_32r : X86::LEA32r);
+    unsigned Opc = MIOpc == X86::INC64r
+                       ? X86::LEA64r
+                       : (Is64Bit ? (SmallLEAs ? X86::LEA32r : X86::LEA64_32r)
+                                  : X86::LEA32r);
     bool isKill;
     unsigned SrcReg;
     MachineOperand ImplicitOp = MachineOperand::CreateReg(0, false);
@@ -966,8 +972,10 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
   case X86::DEC64r:
   case X86::DEC32r: {
     assert(MI.getNumOperands() >= 2 && "Unknown dec instruction!");
-    unsigned Opc = MIOpc == X86::DEC64r ? X86::LEA64r
-        : (Is64Bit ? X86::LEA64_32r : X86::LEA32r);
+    unsigned Opc = MIOpc == X86::DEC64r
+                       ? X86::LEA64r
+                       : (Is64Bit ? (SmallLEAs ? X86::LEA32r : X86::LEA64_32r)
+                                  : X86::LEA32r);
 
     bool isKill;
     unsigned SrcReg;
