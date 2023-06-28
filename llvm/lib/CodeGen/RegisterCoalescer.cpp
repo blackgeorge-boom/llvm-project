@@ -1697,7 +1697,7 @@ void RegisterCoalescer::updateRegDefsUses(unsigned SrcReg,
     // operand (which should be the same as the class of the zero register, from
     // an earlier use of `requiresRegClassOfCopiedReg` in the InstrEmitter.
     // TODO: Check if `isCopy()` is enough, or `isCopyLike()` is needed.
-    if (UseMI->isCopy() && TRI->requiresRegClassOfCopiedReg(DstReg)) {
+    if (UseMI->isCopy() && TRI->requiresRegClassOfCopiedReg(*MF, DstReg)) {
       MachineOperand &CopyDstMO = UseMI->getOperand(0);
       MachineOperand &CopySrcMO = UseMI->getOperand(1);
 

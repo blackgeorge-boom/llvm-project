@@ -371,6 +371,11 @@ def FeatureAvoidF128 : SubtargetFeature<"avoid-f128", "AvoidF128",
 def FeatureAvoidUMADDL : SubtargetFeature<"avoid-wide-mul-add", "AvoidUMADDL",
     "true", "Disable the use of wide multiplication-addition of 32-bit to 64-bit.">;
 
+// Whether to enable the `requiresRegClassOfCopiedReg` check or not.
+// See TargetRegisterInfo.h for more details.
+def FeatureCopyWZRToTemp : SubtargetFeature<"copy-wzr-temp", "HasCopyWZRToTemp",
+    "true", "Copy the wzr register only to temporary registers.">;
+
 //===----------------------------------------------------------------------===//
 // Architectures.
 //

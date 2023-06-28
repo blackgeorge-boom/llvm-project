@@ -880,7 +880,8 @@ public:
   /// zero register, if provided by the architecture, and returns true in that
   /// case. This way, targets can choose to copy the zero register only to
   /// specific register classes.
-  virtual bool requiresRegClassOfCopiedReg(unsigned &SrcReg) const {
+  virtual bool requiresRegClassOfCopiedReg(const MachineFunction &MF,
+                                           unsigned &SrcReg) const {
     return false;
   }
 

@@ -140,6 +140,7 @@ protected:
   bool TempRegsADRP = false;
   bool AvoidF128 = false;
   bool AvoidUMADDL = false;
+  bool HasCopyWZRToTemp = false;
 
   // Arm SVE2 extensions
   bool HasSVE2AES = false;
@@ -395,6 +396,7 @@ public:
   bool hasTempRegsADRP() const { return TempRegsADRP; }
   bool avoidF128() const { return AvoidF128; }
   bool avoidUMADDL() const { return AvoidUMADDL; }
+  bool hasCopyWZRToTemp() const { return HasCopyWZRToTemp; }
   // Arm SVE2 extensions
   bool hasSVE2AES() const { return HasSVE2AES; }
   bool hasSVE2SM4() const { return HasSVE2SM4; }

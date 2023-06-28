@@ -159,7 +159,7 @@ EmitCopyFromReg(SDNode *Node, unsigned ResNo, bool IsClone, bool IsCloned,
   // Figure out the register class to create for the destreg.
   if (VRBase) {
     DstRC = MRI->getRegClass(VRBase);
-    if (TRI->requiresRegClassOfCopiedReg(SrcReg)) {
+    if (TRI->requiresRegClassOfCopiedReg(*MF, SrcReg)) {
       DstRC = SrcRC;
     }
   } else if (UseRC) {

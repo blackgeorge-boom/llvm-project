@@ -563,6 +563,10 @@ unsigned AArch64RegisterInfo::getLocalAddressRegister(
   return getFrameRegister(MF);
 }
 
-bool AArch64RegisterInfo::requiresRegClassOfCopiedReg(unsigned &SrcReg) const {
-  return SrcReg == AArch64::WZR;
+bool AArch64RegisterInfo::requiresRegClassOfCopiedReg(const MachineFunction &MF,
+                                                      unsigned &SrcReg) const {
+  if (MF.getSubtarget<AArch64Subtarget>().hasCopyWZRToTemp())
+    return SrcReg == AArch64::WZR;
+  else
+    return false;
 }
