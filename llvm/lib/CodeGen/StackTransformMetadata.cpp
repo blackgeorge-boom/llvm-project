@@ -1380,8 +1380,8 @@ void StackTransformMetadata::findArchSpecificLiveVals() {
                 }
 
                 SeenDefs.insert(DefinitionMI);
-                sanitizeVregs(MLV, MISM);
                 MLV = TVG->getMachineValue(DefinitionMI);
+                sanitizeVregs(MLV, MISM);
 
                 if (MLV)
                   break; // We got a value!
