@@ -66,6 +66,8 @@ union IntFloat32 { float f; uint64_t i; };
 MachineLiveVal *
 AArch64Values::genADDInstructions(const MachineInstr *MI) const {
   int Index;
+  unsigned Reg1, Reg2;
+  ValueGenInstList IL;
 
   switch(MI->getOpcode()) {
   case AArch64::ADDXri:
@@ -75,6 +77,14 @@ AArch64Values::genADDInstructions(const MachineInstr *MI) const {
       assert(MI->getOperand(3).isImm() && MI->getOperand(3).getImm() == 0);
       return new MachineStackObject(Index, false, MI, true);
     }
+    break;
+  case AArch64::ADDXrr:
+    assert(MI->getOperand(1).isReg() && MI->getOperand(2).isReg());
+    Reg1 = MI->getOperand(1).getReg();
+    Reg2 = MI->getOperand(2).getReg();
+    IL.emplace_back(new RegInstruction<InstType::Set>(Reg1));
+    IL.emplace_back(new RegInstruction<InstType::Add>(Reg2));
+    return new MachineGeneratedVal(IL, MI, true);
     break;
   default:
     LLVM_DEBUG(dbgs() << "Unhandled ADD machine instruction");
@@ -200,6 +210,7 @@ MachineLiveValPtr AArch64Values::getMachineValue(const MachineInstr *MI) const {
 
   switch(MI->getOpcode()) {
   case AArch64::ADDXri:
+  case AArch64::ADDXrr:
     Val = genADDInstructions(MI);
     break;
   case AArch64::ADRP:
