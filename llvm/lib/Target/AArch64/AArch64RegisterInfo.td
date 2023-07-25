@@ -186,42 +186,52 @@ def FFR : AArch64Reg<0, "ffr">, DwarfRegNum<[47]>;
 
 #ifndef UNIFICO_GPR_CALLING_CONV
 def GPR32common : RegisterClass<"AArch64", [i32], 32, (sequence "W%u", 0, 30)> {
-#else
-def GPR32common : RegisterClass<"AArch64", [i32], 32,
-                                (add (sequence "W%u", 0, 8), (sequence "W%u", 16, 20), W29, W30)> {
-#endif
   let AltOrders = [(rotl GPR32common, 8)];
   let AltOrderSelect = [{ return 1; }];
+#else
+def GPR32common : RegisterClass<"AArch64", [i32], 32,
+                                (add W8, W3, W2, W1, W0, W19, W29, W30,
+                                     W4, W5, W6, W7, W18, W20, W16, W17)> {
+#endif
 }
 
 def GPR64common : RegisterClass<"AArch64", [i64], 64,
 #ifndef UNIFICO_GPR_CALLING_CONV
                                 (add (sequence "X%u", 0, 28), FP, LR)> {
-#else
-                                (add (sequence "X%u", 0, 8), (sequence "X%u", 16, 20), FP, LR)> {
-#endif
   let AltOrders = [(rotl GPR64common, 8)];
   let AltOrderSelect = [{ return 1; }];
+#else
+                                (add X8, X3, X2, X1, X0, X4, X5, X6, X7,
+                                     X19, X18, X20, X16, X17, FP, LR)> {
+#endif
 }
 
 // GPR register classes which exclude SP/WSP.
 def GPR32 : RegisterClass<"AArch64", [i32], 32, (add GPR32common, WZR)> {
+#ifndef UNIFICO_GPR_CALLING_CONV
   let AltOrders = [(rotl GPR32, 8)];
   let AltOrderSelect = [{ return 1; }];
+#endif
 }
 def GPR64 : RegisterClass<"AArch64", [i64], 64, (add GPR64common, XZR)> {
+#ifndef UNIFICO_GPR_CALLING_CONV
   let AltOrders = [(rotl GPR64, 8)];
   let AltOrderSelect = [{ return 1; }];
+#endif
 }
 
 // GPR register classes which include SP/WSP.
 def GPR32sp : RegisterClass<"AArch64", [i32], 32, (add GPR32common, WSP)> {
+#ifndef UNIFICO_GPR_CALLING_CONV
   let AltOrders = [(rotl GPR32sp, 8)];
   let AltOrderSelect = [{ return 1; }];
+#endif
 }
 def GPR64sp : RegisterClass<"AArch64", [i64], 64, (add GPR64common, SP)> {
+#ifndef UNIFICO_GPR_CALLING_CONV
   let AltOrders = [(rotl GPR64sp, 8)];
   let AltOrderSelect = [{ return 1; }];
+#endif
 }
 
 #ifdef UNIFICO_REGALLOC_RULES
@@ -230,18 +240,12 @@ def GPR64sp : RegisterClass<"AArch64", [i64], 64, (add GPR64common, SP)> {
 // since for X86 we are using MOV32r0 instead, which for now we only assign to temporary registers.
 // This will be achieved through calling `TargetRegisterInfo::getMinimalPhysRegClass`.
 def GPR32temp : RegisterClass<"AArch64", [i32], 32,
-                                (add (sequence "W%u", 0, 8), (sequence "W%u", 16, 18), WZR)> {
-  let AltOrders = [(rotl GPR32temp, 8)];
-  let AltOrderSelect = [{ return 1; }];
-}
+                                (add W8, W3, W2, W1, W0, W4, W5, W6, W7, W18, W16, W17, WZR)>;
 #endif
 
 #ifdef UNIFICO_REMAT_RULES
 def GPR64temp : RegisterClass<"AArch64", [i64], 64,
-                                (add (sequence "X%u", 6, 8), (sequence "X%u", 16, 18))> {
-  let AltOrders = [(rotl GPR64temp, 8)];
-  let AltOrderSelect = [{ return 1; }];
-}
+                                (add X8, X3, X2, X1, X0, X4, X5, X6, X7, X18, X16, X17, XZR)>;
 #endif
 
 def GPR32sponly : RegisterClass<"AArch64", [i32], 32, (add WSP)>;
