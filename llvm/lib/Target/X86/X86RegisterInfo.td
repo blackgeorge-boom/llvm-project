@@ -73,16 +73,8 @@ def R11B : X86Reg<"r11b", 11>;
 def R12B : X86Reg<"r12b", 12>;
 def R13B : X86Reg<"r13b", 13>;
 def R14B : X86Reg<"r14b", 14>;
-#ifndef UNIFICO_REGALLOC_RULES
-def R15B : X86Reg<"r15b", 15>;
-#endif
-}
-
-#ifdef UNIFICO_REGALLOC_RULES
-let CostPerUse = 0 in {
 def R15B : X86Reg<"r15b", 15>;
 }
-#endif
 
 let isArtificial = 1 in {
 // High byte of the low 16 bits of the super-register:
@@ -143,17 +135,8 @@ def R11W : X86Reg<"r11w", 11, [R11B,R11BH]>;
 def R12W : X86Reg<"r12w", 12, [R12B,R12BH]>;
 def R13W : X86Reg<"r13w", 13, [R13B,R13BH]>;
 def R14W : X86Reg<"r14w", 14, [R14B,R14BH]>;
-#ifndef UNIFICO_REGALLOC_RULES
-def R15W : X86Reg<"r15w", 15, [R15B,R15BH]>;
-#endif
-}
-
-#ifdef UNIFICO_REGALLOC_RULES
-let SubRegIndices = [sub_8bit, sub_8bit_hi_phony], CostPerUse = 0,
-    CoveredBySubRegs = 1 in {
 def R15W : X86Reg<"r15w", 15, [R15B,R15BH]>;
 }
-#endif
 
 // 32-bit registers
 let SubRegIndices = [sub_16bit, sub_16bit_hi], CoveredBySubRegs = 1 in {
@@ -178,17 +161,8 @@ def R11D : X86Reg<"r11d", 11, [R11W,R11WH]>;
 def R12D : X86Reg<"r12d", 12, [R12W,R12WH]>;
 def R13D : X86Reg<"r13d", 13, [R13W,R13WH]>;
 def R14D : X86Reg<"r14d", 14, [R14W,R14WH]>;
-#ifndef UNIFICO_REGALLOC_RULES
-def R15D : X86Reg<"r15d", 15, [R15W,R15WH]>;
-#endif
-}
-
-#ifdef UNIFICO_REGALLOC_RULES
-let SubRegIndices = [sub_16bit, sub_16bit_hi], CostPerUse = 0,
-    CoveredBySubRegs = 1 in {
 def R15D : X86Reg<"r15d", 15, [R15W,R15WH]>;
 }
-#endif
 
 // 64-bit registers, X86-64 only
 let SubRegIndices = [sub_32bit] in {
@@ -210,18 +184,9 @@ def R11 : X86Reg<"r11", 11, [R11D]>, DwarfRegNum<[11, -2, -2]>;
 def R12 : X86Reg<"r12", 12, [R12D]>, DwarfRegNum<[12, -2, -2]>;
 def R13 : X86Reg<"r13", 13, [R13D]>, DwarfRegNum<[13, -2, -2]>;
 def R14 : X86Reg<"r14", 14, [R14D]>, DwarfRegNum<[14, -2, -2]>;
-#ifndef UNIFICO_REGALLOC_RULES
 def R15 : X86Reg<"r15", 15, [R15D]>, DwarfRegNum<[15, -2, -2]>;
-#endif
 def RIP : X86Reg<"rip",  0, [EIP]>,  DwarfRegNum<[16, -2, -2]>;
 }}
-
-#ifdef UNIFICO_REGALLOC_RULES
-let SubRegIndices = [sub_32bit] in {
-let CostPerUse = 0 in {
-def R15 : X86Reg<"r15", 15, [R15D]>, DwarfRegNum<[15, -2, -2]>;
-}}
-#endif
 
 // MMX Registers. These are actually aliased to ST0 .. ST7
 def MM0 : X86Reg<"mm0", 0>, DwarfRegNum<[41, 29, 29]>;
