@@ -50,6 +50,12 @@ DisableSharing("no-stack-slot-sharing",
              cl::init(false), cl::Hidden,
              cl::desc("Suppress slot sharing during stack coloring"));
 
+static cl::opt<bool>
+    AlignObjectsToFour("align-objects-to-four",
+                       cl::desc("Hard-code the alignment of all objects in the"
+                                "stack to by at least four bytes."),
+                       cl::init(false), cl::Hidden);
+
 static cl::opt<int> DCELimit("ssc-dce-limit", cl::init(-1), cl::Hidden);
 
 STATISTIC(NumEliminated, "Number of stack slots eliminated due to coloring");
@@ -309,6 +315,8 @@ int StackSlotColoring::ColorSlot(LiveInterval *li) {
   // objects sharing the same slot, then make sure the size and alignment
   // are large enough for all.
   unsigned Align = OrigAlignments[FI];
+  if (AlignObjectsToFour)
+    Align = std::max(Align, 4u);
   if (!Share || Align > MFI->getObjectAlignment(Color))
     MFI->setObjectAlignment(Color, Align);
   int64_t Size = OrigSizes[FI];
