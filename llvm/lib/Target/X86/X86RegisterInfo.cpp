@@ -41,6 +41,10 @@ static cl::opt<bool>
 EnableBasePointer("x86-use-base-pointer", cl::Hidden, cl::init(true),
           cl::desc("Enable use of a base pointer for complex stack frames"));
 
+static cl::opt<bool> DisableGR32tempInflate(
+    "disable-gr32temp-inflate", cl::Hidden, cl::init(false),
+    cl::desc("Disable inflation of GR32 temp registers."));
+
 X86RegisterInfo::X86RegisterInfo(const Triple &TT)
     : X86GenRegisterInfo((TT.isArch64Bit() ? X86::RIP : X86::EIP),
                          X86_MC::getDwarfRegFlavour(TT, false),
@@ -125,6 +129,13 @@ X86RegisterInfo::getLargestLegalSuperClass(const TargetRegisterClass *RC,
   // sub-class, so sub-classes like GR8_ABCD_L are allowed to expand to the
   // full GR8 class.
   if (RC == &X86::GR8_NOREXRegClass)
+    return RC;
+
+  // Don't allow super-classes of GR32temp. This class is used to disallow the
+  // use of callee-saved registers in the GR32 register class. We currently
+  // don't have any useful case of inflating to the super-class, which contains
+  // CSRs, so we don't do anything here.
+  if (DisableGR32tempInflate && RC == &X86::GR32tempRegClass)
     return RC;
 
   const X86Subtarget &Subtarget = MF.getSubtarget<X86Subtarget>();
