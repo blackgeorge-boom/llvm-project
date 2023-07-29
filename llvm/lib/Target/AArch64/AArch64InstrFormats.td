@@ -2055,11 +2055,17 @@ class AddSubImmShift<bit isSub, bit setFlags, RegisterClass dstRegtype,
   let DecoderMethod = "DecodeAddSubImmShift";
 }
 
+#ifdef UNIFICO_AARCH64_TWOADDR
+let Constraints = "$Rd = $Rn" in {
+#endif
 class BaseAddSubRegPseudo<RegisterClass regtype,
                           SDPatternOperator OpNode>
     : Pseudo<(outs regtype:$Rd), (ins regtype:$Rn, regtype:$Rm),
              [(set regtype:$Rd, (OpNode regtype:$Rn, regtype:$Rm))]>,
       Sched<[WriteI, ReadI, ReadI]>;
+#ifdef UNIFICO_AARCH64_TWOADDR
+}
+#endif
 
 class BaseAddSubSReg<bit isSub, bit setFlags, RegisterClass regtype,
                      arith_shifted_reg shifted_regtype, string asm,
@@ -2167,8 +2173,14 @@ multiclass AddSub<bit isSub, string mnemonic, string alias,
   }
 
   // Add/Subtract register - Only used for CodeGen
+#ifdef UNIFICO_AARCH64_TWOADDR
+  let isCommutable = 1 in {
+#endif
   def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
   def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
+#ifdef UNIFICO_AARCH64_TWOADDR
+  }
+#endif
 
   // Add/Subtract shifted register
   def Wrs : BaseAddSubSReg<isSub, 0, GPR32, arith_shifted_reg32, mnemonic,
@@ -2242,8 +2254,14 @@ multiclass AddSubS<bit isSub, string mnemonic, SDNode OpNode, string cmp,
   }
 
   // Add/Subtract register
+#ifdef UNIFICO_AARCH64_TWOADDR
+  let isCommutable = 1 in {
+#endif
   def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
   def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
+#ifdef UNIFICO_AARCH64_TWOADDR
+  }
+#endif
 
   // Add/Subtract shifted register
   def Wrs : BaseAddSubSReg<isSub, 1, GPR32, arith_shifted_reg32, mnemonic,
