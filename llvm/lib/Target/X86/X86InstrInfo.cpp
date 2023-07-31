@@ -1010,7 +1010,8 @@ X86InstrInfo::convertToThreeAddress(MachineFunction::iterator &MFI,
     if (MIOpc == X86::ADD64rr || MIOpc == X86::ADD64rr_DB)
       Opc = X86::LEA64r;
     else
-      Opc = Is64Bit ? X86::LEA64_32r : X86::LEA32r;
+      Opc = Is64Bit ? (SmallLEAs ? X86::LEA32r : X86::LEA64_32r)
+               : X86::LEA32r;
 
     bool isKill;
     unsigned SrcReg;
