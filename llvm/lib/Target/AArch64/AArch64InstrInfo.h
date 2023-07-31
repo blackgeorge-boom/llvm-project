@@ -265,6 +265,35 @@ public:
   /// on Windows.
   static bool isSEHInstruction(const MachineInstr &MI);
 
+  /// Given an operand within a MachineInstr, insert preceding code to put it
+  /// into the right format for a particular kind of LEA-like instruction in
+  /// AArch64. This may involve using an appropriate super-register instead
+  /// (with an implicit use of the original) or creating a new virtual register
+  /// and inserting COPY instructions to get the data into the right class.
+  ///
+  /// Reference parameters are set to indicate how caller should add this
+  /// operand to the LEA-like instruction.
+  bool classifyADDReg(MachineInstr &MI, const MachineOperand &Src,
+                      unsigned LEAOpcode, bool AllowSP, unsigned &NewSrc,
+                      bool &isKill, MachineOperand &ImplicitOp,
+                      LiveVariables *LV) const;
+
+  /// convertToThreeAddress - This method must be implemented by targets that
+  /// set the M_CONVERTIBLE_TO_3_ADDR flag.  When this flag is set, the target
+  /// may be able to convert a two-address instruction into a true
+  /// three-address instruction on demand.  This allows the X86 target (for
+  /// example) to convert ADD and SHL instructions into LEA instructions if they
+  /// would require register copies due to two-addressness. To emulate this
+  /// behavior in AArch64, we just convert the ADD/SUB instructions to their
+  /// original three-address format.
+  ///
+  /// This method returns a null pointer if the transformation cannot be
+  /// performed, otherwise it returns the new instruction.
+  ///
+  MachineInstr *convertToThreeAddress(MachineFunction::iterator &MFI,
+                                      MachineInstr &MI,
+                                      LiveVariables *LV) const override;
+
 #define GET_INSTRINFO_HELPER_DECLS
 #include "AArch64GenInstrInfo.inc"
 

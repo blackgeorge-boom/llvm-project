@@ -2056,7 +2056,7 @@ class AddSubImmShift<bit isSub, bit setFlags, RegisterClass dstRegtype,
 }
 
 #ifdef UNIFICO_AARCH64_TWOADDR
-let Constraints = "$Rd = $Rn" in {
+let Constraints = "$Rd = $Rn", isConvertibleToThreeAddress = 1 in {
 #endif
 class BaseAddSubRegPseudo<RegisterClass regtype,
                           SDPatternOperator OpNode>

@@ -18,15 +18,16 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/CodeGen/LiveVariables.h"
 #include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineMemOperand.h"
+#include "llvm/CodeGen/MachineModuleInfo.h"
 #include "llvm/CodeGen/MachineOperand.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
-#include "llvm/CodeGen/MachineModuleInfo.h"
 #include "llvm/CodeGen/StackMaps.h"
 #include "llvm/CodeGen/TargetRegisterInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
@@ -5568,6 +5569,112 @@ bool AArch64InstrInfo::isCopyInstrImpl(
   }
 
   return false;
+}
+
+bool AArch64InstrInfo::classifyADDReg(MachineInstr &MI,
+                                      const MachineOperand &Src, unsigned Opc,
+                                      bool AllowSP, unsigned &NewSrc,
+                                      bool &isKill, MachineOperand &ImplicitOp,
+                                      LiveVariables *LV) const {
+  MachineFunction &MF = *MI.getParent()->getParent();
+  const TargetRegisterClass *RC;
+  switch (Opc) {
+  default:
+    llvm_unreachable("Unreachable!");
+  case AArch64::ADDWrr:
+  case AArch64::ADDSWrr:
+  case AArch64::SUBWrr:
+  case AArch64::SUBSWrr:
+    RC = &AArch64::GPR32RegClass;
+    break;
+  case AArch64::ADDXrr:
+  case AArch64::ADDSXrr:
+  case AArch64::SUBXrr:
+  case AArch64::SUBSXrr:
+    RC = &AArch64::GPR64RegClass;
+    break;
+  }
+
+  unsigned SrcReg = Src.getReg();
+  NewSrc = SrcReg;
+  return true;
+}
+
+MachineInstr *AArch64InstrInfo::convertToThreeAddress(
+    MachineFunction::iterator &MFI, MachineInstr &MI, LiveVariables *LV) const {
+  MachineFunction &MF = *MI.getParent()->getParent();
+  // All instructions input are two-addr instructions.  Get the known operands.
+  const MachineOperand &Dest = MI.getOperand(0);
+  const MachineOperand &Src = MI.getOperand(1);
+
+  // Ideally, operations with undef should be folded before we get here, but we
+  // can't guarantee it. Bail out because optimizing undefs is a waste of time.
+  // Without this, we have to forward undef state to new register operands to
+  // avoid machine verifier errors.
+  if (Src.isUndef())
+    return nullptr;
+  if (MI.getNumOperands() > 2)
+    if (MI.getOperand(2).isReg() && MI.getOperand(2).isUndef())
+      return nullptr;
+
+  MachineInstr *NewMI = nullptr;
+  bool Is64Bit = true;
+
+  bool Is8BitOp = false;
+  unsigned MIOpc = MI.getOpcode();
+  switch (MIOpc) {
+  default:
+    llvm_unreachable("Unreachable!");
+  case AArch64::ADDXrr:
+  case AArch64::ADDWrr:
+  case AArch64::ADDSXrr:
+  case AArch64::ADDSWrr:
+  case AArch64::SUBXrr:
+  case AArch64::SUBWrr:
+  case AArch64::SUBSXrr:
+  case AArch64::SUBSWrr:
+    assert(MI.getNumOperands() >= 3 && "Unknown add/sub instruction!");
+    unsigned Opc = MIOpc;
+
+    bool isKill;
+    unsigned SrcReg;
+    MachineOperand ImplicitOp = MachineOperand::CreateReg(0, false);
+    if (!classifyADDReg(MI, Src, Opc, /*AllowSP=*/true, SrcReg, isKill,
+                        ImplicitOp, LV))
+      return nullptr;
+
+    const MachineOperand &Src2 = MI.getOperand(2);
+    bool isKill2;
+    unsigned SrcReg2;
+    MachineOperand ImplicitOp2 = MachineOperand::CreateReg(0, false);
+    if (!classifyADDReg(MI, Src2, Opc, /*AllowSP=*/false, SrcReg2, isKill2,
+                        ImplicitOp2, LV))
+      return nullptr;
+
+    MachineInstrBuilder MIB = BuildMI(MF, MI.getDebugLoc(), get(Opc)).add(Dest);
+    if (ImplicitOp.getReg() != 0)
+      MIB.add(ImplicitOp);
+    if (ImplicitOp2.getReg() != 0)
+      MIB.add(ImplicitOp2);
+
+    NewMI = MIB.addReg(SrcReg, getKillRegState(isKill))
+                .addReg(SrcReg2, getKillRegState(isKill2));
+    if (LV && Src2.isKill())
+      LV->replaceKillInstruction(SrcReg2, MI, *NewMI);
+    break;
+  }
+  if (!NewMI)
+    return nullptr;
+
+  if (LV) { // Update live variables
+    if (Src.isKill())
+      LV->replaceKillInstruction(Src.getReg(), MI, *NewMI);
+    if (Dest.isDead())
+      LV->replaceKillInstruction(Dest.getReg(), MI, *NewMI);
+  }
+
+  MFI->insert(MI.getIterator(), NewMI); // Insert the new inst
+  return NewMI;
 }
 
 #define GET_INSTRINFO_HELPERS
