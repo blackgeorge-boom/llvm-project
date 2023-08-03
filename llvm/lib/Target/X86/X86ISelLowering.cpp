@@ -20637,7 +20637,7 @@ SDValue X86TargetLowering::LowerSELECT(SDValue Op, SelectionDAG &DAG) const {
       return DAG.getNode(X86ISD::SELECTS, DL, VT, Cmp, Op1, Op2);
     }
 
-    if (SSECC < 8 || Subtarget.hasAVX()) {
+    if (!Subtarget.avoidSelectToFSETCC() && (SSECC < 8 || Subtarget.hasAVX())) {
       SDValue Cmp = DAG.getNode(X86ISD::FSETCC, DL, VT, CondOp0, CondOp1,
                                 DAG.getConstant(SSECC, DL, MVT::i8));
 

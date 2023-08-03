@@ -507,6 +507,14 @@ def FeatureAvoidOptimizingMulCase1: SubtargetFeature<"avoid-opt-mul-1",
                                         "AvoidOptimizingMulCase1", "true",
                                         "Avoid optimizing multiplication with (2^n + 2/4/6).">;
 
+// Avoid converting SETCC to FSETCC.
+// This would create a series of FANDN, FAND, and FOR instructions that are lowered using vector operands,
+// during PreprocessISelDAG, while AArch64 uses a simple FCMP instruction.
+// Instead, convert SETCC to a CMP in X86.
+def FeatureAvoidSelectToFSETCC: SubtargetFeature<"avoid-select-to-fsetcc",
+                                        "AvoidSelectToFSETCC", "true",
+                                        "Avoid converting SELECT to FSETCC.">;
+
 // Bonnell
 def ProcIntelAtom : SubtargetFeature<"", "X86ProcFamily", "IntelAtom", "">;
 // Silvermont
