@@ -1702,9 +1702,17 @@ void RegisterCoalescer::updateRegDefsUses(unsigned SrcReg,
       MachineOperand &CopySrcMO = UseMI->getOperand(1);
 
       if (CopyDstMO.isReg() && CopySrcMO.isReg() &&
-          CopyDstMO.getReg().isVirtual() && CopySrcMO.getReg().isVirtual())
-        MRI->setRegClass(CopyDstMO.getReg(),
-                         MRI->getRegClass(CopySrcMO.getReg()));
+          CopyDstMO.getReg().isVirtual() && CopySrcMO.getReg().isVirtual()) {
+
+        auto SrcRC = MRI->getRegClass(CopySrcMO.getReg());
+        const TargetRegisterClass *RC{};
+        if (CopyDstMO.getSubReg())
+          RC = TRI->getLargestTempSuperClass(SrcRC, *MF);
+        else
+          RC = SrcRC;
+
+        MRI->setRegClass(CopyDstMO.getReg(), RC);
+      }
     }
 
     // Replace SrcReg with DstReg in all UseMI operands.

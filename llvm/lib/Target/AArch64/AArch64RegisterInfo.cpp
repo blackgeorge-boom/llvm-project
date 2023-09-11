@@ -570,3 +570,11 @@ bool AArch64RegisterInfo::requiresRegClassOfCopiedReg(const MachineFunction &MF,
   else
     return false;
 }
+
+const TargetRegisterClass *
+AArch64RegisterInfo::getLargestTempSuperClass(const TargetRegisterClass *RC,
+                                              const MachineFunction &MF) const {
+  if (RC == &AArch64::GPR32tempRegClass)
+    return &AArch64::GPR64tempRegClass;
+  return RC;
+}

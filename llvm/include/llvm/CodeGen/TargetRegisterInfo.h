@@ -746,6 +746,24 @@ public:
     return RC;
   }
 
+  /// Returns the largest temp register class for RC that is a class of
+  /// temporary registers. The returned register class can be used in copies
+  /// between virtual registers, where the destination is a virtual register
+  /// with a subregister and the source is a virtual register of a temp register
+  /// class. In this case, instead of just copying the source class to the
+  /// destination, as we do for temp register classes, we copy the
+  /// inflated version of the source class, which will be used for the
+  /// subregister later. For example, in:
+  ///     1744B	undef %223.sub_32:gpr64 = COPY $wzr
+  /// we cannot just copy the gpr32temp class to %223, because it
+  /// represents a 32-bit subregister of 64 bits.
+  virtual const TargetRegisterClass *
+  getLargestTempSuperClass(const TargetRegisterClass *RC,
+                           const MachineFunction &) const {
+    /// The default implementation just returns the original register class.
+    return RC;
+  }
+
   /// Return the register pressure "high water mark" for the specific register
   /// class. The scheduler is in high register pressure mode (for the specific
   /// register class) if it goes over the limit.

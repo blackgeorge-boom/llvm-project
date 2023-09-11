@@ -129,6 +129,10 @@ public:
 
   bool requiresRegClassOfCopiedReg(const MachineFunction &MF,
                                    unsigned int &SrcReg) const override;
+
+  const TargetRegisterClass *
+  getLargestTempSuperClass(const TargetRegisterClass *RC,
+                           const MachineFunction &MF) const override;
 };
 
 } // end namespace llvm
