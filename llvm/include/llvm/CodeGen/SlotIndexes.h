@@ -637,8 +637,9 @@ class raw_ostream;
       renumberIndexes(newItr);
       llvm::sort(idx2MBBMap, less_first());
     }
-  };
 
+    void packIndexes();
+  };
   // Specialize IntervalMapInfo for half-open slot index intervals.
   template <>
   struct IntervalMapInfo<SlotIndex> : IntervalMapHalfOpenInfo<SlotIndex> {

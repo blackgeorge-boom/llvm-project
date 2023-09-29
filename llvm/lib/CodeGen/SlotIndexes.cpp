@@ -234,6 +234,33 @@ void SlotIndexes::repairIndexesInRange(MachineBasicBlock *MBB,
   }
 }
 
+void SlotIndexes::packIndexes() {
+  unsigned Index = 0;
+  MachineBasicBlock *MBB;
+  // Iterate over basic blocks in slot index order.
+  for (auto &v : idx2MBBMap) {
+    // Update entries for each instruction in the block and the dummy entry for
+    // the end of the block.
+    MBB = v.second;
+    auto MBBStartIdx = MBBRanges[MBB->getNumber()].first;
+    auto MBBEndIdx = MBBRanges[MBB->getNumber()].second;
+    for (auto I = MBBStartIdx.listEntry()->getIterator(),
+              E = MBBEndIdx.listEntry()->getIterator();
+         I++ != E;) {
+      if (I == E || I->getInstr()) {
+        Index += SlotIndex::InstrDist;
+        I->setIndex(Index);
+      } else {
+        // LiveIntervals may still refer to entries for instructions that have
+        // been erased. We have to update these entries but we don't want them
+        // to affect the rest of the slot numbering, so set them to half way
+        // between the neighboring real instrucion indexes.
+        I->setIndex(Index + SlotIndex::InstrDist / 2);
+      }
+    }
+  }
+}
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 LLVM_DUMP_METHOD void SlotIndexes::dump() const {
   for (IndexList::const_iterator itr = indexList.begin();

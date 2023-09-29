@@ -149,6 +149,11 @@ static cl::opt<bool>
                             cl::desc("Simplify costs in greedy register allocation."),
                             cl::init(false));
 
+static cl::opt<bool>
+    PackIndexes("pack-indexes",
+                cl::desc("Pack indexes during register allocation."),
+                cl::init(false));
+
 static RegisterRegAlloc greedyRegAlloc("greedy", "greedy register allocator",
                                        createGreedyRegisterAllocator);
 
@@ -3237,6 +3242,10 @@ bool RAGreedy::runOnMachineFunction(MachineFunction &mf) {
                      getAnalysis<LiveIntervals>(),
                      getAnalysis<LiveRegMatrix>());
   Indexes = &getAnalysis<SlotIndexes>();
+  // Renumber to get accurate and consistent results from
+  // SlotIndexes::getApproxInstrDistance.
+  if (PackIndexes)
+    Indexes->packIndexes();
   MBFI = &getAnalysis<MachineBlockFrequencyInfo>();
   DomTree = &getAnalysis<MachineDominatorTree>();
   ORE = &getAnalysis<MachineOptimizationRemarkEmitterPass>().getORE();
